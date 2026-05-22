@@ -5,7 +5,7 @@ import { Menu, X } from 'lucide-react';
 
 const navItems = [
   {
-    label: '회사 소개',
+    label: '회사 소개', 
     path: '/company', 
     children: [
       { label: '회사 개요', path: '/company/overview' },
