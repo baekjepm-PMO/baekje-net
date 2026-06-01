@@ -13,7 +13,7 @@ export default function Footer() {
               지금 백제약품과 연결을 시작하세요.
             </p> 
           </div> 
-
+  
           <div className="md:min-w-[310px]">
             <h4 className="text-white text-sm font-semibold mb-3">연락처</h4>
             <ul className="space-y-2.5">
