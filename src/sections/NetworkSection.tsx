@@ -19,11 +19,11 @@ const GLOBE_AUTO_PLAY_DURATION = 3.0;
 const CONTENT_REVEAL_START = 0.37;
 const CONTENT_REVEAL_END = 0.45;
 const PALETTE = {
-  cloudDancer: '#F1F0EC',
+  cloudDancer: '#F0EEE9',
   cloudDancerDeep: '#E4E3DF',
-  stretchLimo: '#343A3D',
-  aquaGray: '#A3ADA8',
-  regatta: '#587FBB',
+  stretchLimo: '#2B2C30',
+  aquaGray: '#A5B2AA',
+  regatta: '#497AB7',
   regattaDark: '#304868',
 };
 const NETWORK_TITLE_LINES = ['대한민국 헬스케어를', '연결하는 유통 네트워크'];
@@ -297,28 +297,33 @@ function KoreaExternalMap({
               initial={{ opacity: 0, scale: 0.5 }}
               animate={
                 active
-                  ? { opacity: [0.45, 0.85, 0.45], scale: 1 }
+                  ? { opacity: 1, scale: 1 }
                   : { opacity: 0, scale: 0.5 }
               }
               transition={
                 active
                   ? {
-                      scale: { duration: 0.34, delay: index * 0.14, ease },
-                      opacity: {
-                        duration: 3.2 + (index % 3) * 0.5,
-                        delay: index * 0.3,
-                        repeat: Infinity,
-                        ease: 'easeInOut',
-                      },
+                      duration: 0.34,
+                      delay: index * 0.14,
+                      ease,
                     }
                   : {}
               }
               style={{ transformOrigin: `${node.x}px ${node.y}px` }}
             >
-              <circle cx={node.x} cy={node.y} r="9" fill={PALETTE.regatta} fillOpacity="0.12" />
-              <circle cx={node.x} cy={node.y} r="5.5" fill={PALETTE.regatta} fillOpacity="0.18" />
-              <circle cx={node.x} cy={node.y} r="3.9" fill={PALETTE.cloudDancer} />
-              <circle cx={node.x} cy={node.y} r="2.2" fill={PALETTE.regatta} />
+              <circle cx={node.x} cy={node.y} r="8.5" fill={PALETTE.regatta} fillOpacity="0.16" />
+              <circle cx={node.x} cy={node.y} r="5.2" fill={PALETTE.cloudDancer} />
+              <circle
+                cx={node.x}
+                cy={node.y}
+                r="4.2"
+                fill="none"
+                stroke={PALETTE.regatta}
+                strokeOpacity="0.78"
+                strokeWidth="1.2"
+                vectorEffect="non-scaling-stroke"
+              />
+              <circle cx={node.x} cy={node.y} r="2.7" fill={PALETTE.regatta} />
             </motion.g>
           ))}
         </svg>

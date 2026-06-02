@@ -6,19 +6,19 @@
 
 @layer base {
   :root {
-    --color-aqua-gray: #A3ADA8;
-    --color-regatta: #587FBB;
-    --color-rinsing-rivulet: #5BC8C6;
-    --color-dusky-citron: #E2CF7A;
-    --color-cloud-dancer: #F1F0EC;
-    --color-stretch-limo: #343A3D;
+    --color-aqua-gray: #A5B2AA;
+    --color-regatta: #497AB7;
+    --color-rinsing-rivulet: #5CC6C3;
+    --color-dusky-citron: #E3CC81;
+    --color-cloud-dancer: #F0EEE9;
+    --color-stretch-limo: #2B2C30;
     --color-text-black: #000000;
-    --rgb-aqua-gray: 163 173 168;
-    --rgb-regatta: 88 127 187;
-    --rgb-rinsing-rivulet: 91 200 198;
-    --rgb-dusky-citron: 226 207 122;
-    --rgb-cloud-dancer: 241 240 236;
-    --rgb-stretch-limo: 52 58 61;
+    --rgb-aqua-gray: 165 178 170;
+    --rgb-regatta: 73 122 183;
+    --rgb-rinsing-rivulet: 92 198 195;
+    --rgb-dusky-citron: 227 204 129;
+    --rgb-cloud-dancer: 240 238 233;
+    --rgb-stretch-limo: 43 44 48;
   }
 
   html {
@@ -98,14 +98,15 @@
   .hero-image {
     display: block;
     object-fit: cover;
+    filter: brightness(0.9) saturate(0.88) contrast(1.04);
   }
 
   .hero-image-shade {
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(90deg, rgb(var(--rgb-stretch-limo) / 0.78) 0%, rgb(var(--rgb-stretch-limo) / 0.56) 44%, rgb(var(--rgb-stretch-limo) / 0.22) 72%, rgb(var(--rgb-stretch-limo) / 0.36) 100%),
-      linear-gradient(to top, rgb(var(--rgb-stretch-limo) / 0.58), rgb(var(--rgb-stretch-limo) / 0.18) 48%, rgb(var(--rgb-stretch-limo) / 0.1) 78%);
+      linear-gradient(90deg, rgba(4, 12, 20, 0.78) 0%, rgba(4, 12, 20, 0.56) 44%, rgba(4, 12, 20, 0.22) 72%, rgba(4, 12, 20, 0.36) 100%),
+      linear-gradient(to top, rgba(3, 10, 16, 0.6), rgba(3, 10, 16, 0.2) 48%, rgba(3, 10, 16, 0.12) 78%);
   }
 
   .hero-split-stage {

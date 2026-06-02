@@ -7,21 +7,21 @@ const boxes = ['01', '02', '03'];
 const boxLabels = ['NETWORK', 'SPECIALIZED', 'SUPPLY'];
 const boxPalettes = [
   {
-    panel: '#587FBB',
-    panelSoft: '#587FBB',
-    panelRgb: '88 127 187',
+    panel: '#497AB7',
+    panelSoft: '#497AB7',
+    panelRgb: '73 122 183',
     edge: '#304868',
   },
   {
-    panel: '#5BC8C6',
-    panelSoft: '#5BC8C6',
-    panelRgb: '91 200 198',
+    panel: '#5CC6C3',
+    panelSoft: '#5CC6C3',
+    panelRgb: '92 198 195',
     edge: '#267473',
   },
   {
-    panel: '#E2CF7A',
-    panelSoft: '#E2CF7A',
-    panelRgb: '226 207 122',
+    panel: '#E3CC81',
+    panelSoft: '#E3CC81',
+    panelRgb: '227 204 129',
     edge: '#A27627',
   },
 ] as const;
