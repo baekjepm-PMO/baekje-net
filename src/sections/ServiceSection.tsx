@@ -75,12 +75,12 @@ export default function ServiceSection() {
   return (
     <section ref={sectionRef} className="relative bg-white text-neutral-900">
       {/* Heading */}
-      <div ref={headingRef} className="relative z-10 -mb-20 max-w-[1440px] mx-auto px-6 md:-mb-24 md:px-12 lg:-mb-28 lg:px-20 xl:px-32 pt-24 md:pt-32 pb-6 md:pb-8">
+      <div ref={headingRef} className="relative z-10 -mb-48 max-w-[1440px] mx-auto px-6 md:-mb-56 md:px-12 lg:-mb-64 lg:px-20 xl:px-32 pt-24 md:pt-32 pb-6 md:pb-8">
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, ease }}
-          className="text-primary-400 text-xs font-semibold tracking-[0.2em] uppercase mb-6"
+          className="text-regatta-600 text-[15px] font-extrabold tracking-[0.2em] uppercase mb-6"
         >
           {serviceData.label}
         </motion.p>
@@ -100,7 +100,7 @@ export default function ServiceSection() {
             initial={{ opacity: 0, y: 22 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8, delay: 0.28, ease }}
-            className="mt-5 max-w-3xl text-base font-medium leading-[1.75] text-neutral-600 md:text-lg"
+            className="mt-5 max-w-6xl text-base font-medium leading-[1.75] text-neutral-600 md:text-lg xl:max-w-none xl:whitespace-nowrap"
           >
             {serviceData.subDescription}
           </motion.p>

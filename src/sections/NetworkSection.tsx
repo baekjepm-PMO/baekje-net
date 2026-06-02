@@ -18,6 +18,14 @@ const GLOBE_AUTO_PLAY_END = 0.67;
 const GLOBE_AUTO_PLAY_DURATION = 3.0;
 const CONTENT_REVEAL_START = 0.37;
 const CONTENT_REVEAL_END = 0.45;
+const PALETTE = {
+  cloudDancer: '#F1F0EC',
+  cloudDancerDeep: '#E4E3DF',
+  stretchLimo: '#343A3D',
+  aquaGray: '#A3ADA8',
+  regatta: '#587FBB',
+  regattaDark: '#304868',
+};
 const NETWORK_TITLE_LINES = ['대한민국 헬스케어를', '연결하는 유통 네트워크'];
 const NETWORK_NODE_POOL = [
   { x: 141, y: 135 },
@@ -57,11 +65,11 @@ function pickKoreaNodes(count: number) {
 
 function KoreaMapGrid({ id }: { id: string }) {
   return (
-    <div className="absolute inset-0 opacity-10">
+    <div className="absolute inset-0 opacity-20">
       <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <pattern id={id} width="40" height="40" patternUnits="userSpaceOnUse">
-            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" strokeWidth="0.5" />
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke={PALETTE.aquaGray} strokeWidth="0.5" />
           </pattern>
         </defs>
         <rect width="100%" height="100%" fill={`url(#${id})`} />
@@ -87,6 +95,19 @@ function TravelingDot({
 }) {
   const distance = Math.hypot(to.x - from.x, to.y - from.y);
   const duration = distance / speed;
+  const angle = (Math.atan2(to.y - from.y, to.x - from.x) * 180) / Math.PI;
+  const rearLength = size * 4.65;
+  const frontLength = size * 3.9;
+  const coreWidth = size * 1.05;
+  const markHeight = size * 1.38;
+  const flowMarkPath = [
+    `M ${-rearLength} 0`,
+    `C ${-coreWidth * 1.9} ${-markHeight * 0.2}, ${-coreWidth * 0.95} ${-markHeight}, 0 ${-markHeight}`,
+    `C ${coreWidth * 0.95} ${-markHeight}, ${coreWidth * 1.9} ${-markHeight * 0.2}, ${frontLength} 0`,
+    `C ${coreWidth * 1.9} ${markHeight * 0.2}, ${coreWidth * 0.95} ${markHeight}, 0 ${markHeight}`,
+    `C ${-coreWidth * 0.95} ${markHeight}, ${-coreWidth * 1.9} ${markHeight * 0.2}, ${-rearLength} 0`,
+    'Z',
+  ].join(' ');
 
   return (
     <motion.g
@@ -113,17 +134,17 @@ function TravelingDot({
       }
     >
       {/* 넓은 글로우 헤일로 */}
-      <circle r={size * 3.2} fill="#5580ff" fillOpacity="0.22" />
+      <g transform={`rotate(${angle})`}>
+        <path
+          d={flowMarkPath}
+          fill={PALETTE.regatta}
+          fillOpacity="0.18"
+          transform="scale(1.16 1.22)"
+        />
       {/* 중간 글로우 */}
-      <circle r={size * 1.9} fill="#7aa2ff" fillOpacity="0.55" />
+        <path d={flowMarkPath} fill={PALETTE.regatta} />
+      </g>
       {/* 핵심 흰 점 */}
-      <circle
-        r={size}
-        fill="#ffffff"
-        style={{
-          filter: `drop-shadow(0 0 ${size + 3}px #ffffff) drop-shadow(0 0 ${size * 3}px #7aa2ff) drop-shadow(0 0 ${size * 5}px #3a6aff)`,
-        }}
-      />
     </motion.g>
   );
 }
@@ -154,14 +175,13 @@ function KoreaExternalMap({
   return (
     <div className={className}>
       <div className="relative h-full w-full">
-        {glow && <div className="absolute inset-[10%] rounded-full bg-blue-500/10 blur-3xl" />}
+        {glow && <div className="absolute inset-[10%] rounded-full bg-regatta-600/10 blur-3xl" />}
         <svg
           aria-hidden="true"
-          className="absolute inset-0 h-full w-full opacity-90"
+          className="absolute inset-0 h-full w-full opacity-95"
           viewBox={KOREA_MAP_VIEW_BOX}
           preserveAspectRatio="xMidYMid meet"
           style={{
-            filter: 'drop-shadow(0 0 16px rgba(59, 130, 246, 0.18))',
             overflow: 'hidden',
           }}
           xmlns="http://www.w3.org/2000/svg"
@@ -171,9 +191,9 @@ function KoreaExternalMap({
               key={`shadow-${location.id}`}
               d={location.path}
               fill="none"
-              stroke="#071225"
-              strokeOpacity="0.88"
-              strokeWidth="3.1"
+              stroke={PALETTE.cloudDancerDeep}
+              strokeOpacity="0.82"
+              strokeWidth="3"
               strokeLinecap="round"
               strokeLinejoin="round"
               vectorEffect="non-scaling-stroke"
@@ -183,10 +203,10 @@ function KoreaExternalMap({
             <path
               key={location.id}
               d={location.path}
-              fill="#08142d"
-              fillOpacity="0.16"
-              stroke="#294c96"
-              strokeOpacity="0.92"
+              fill={PALETTE.aquaGray}
+              fillOpacity="0.5"
+              stroke={PALETTE.regatta}
+              strokeOpacity="0.58"
               strokeWidth="1.3"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -198,8 +218,8 @@ function KoreaExternalMap({
               key={`highlight-${location.id}`}
               d={location.path}
               fill="none"
-              stroke="#9fb5ff"
-              strokeOpacity="0.22"
+              stroke={PALETTE.cloudDancer}
+              strokeOpacity="0.5"
               strokeWidth="0.48"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -214,7 +234,7 @@ function KoreaExternalMap({
               y1={segment.from.y}
               x2={segment.to.x}
               y2={segment.to.y}
-              stroke="#7aa2ff"
+              stroke={PALETTE.regatta}
               strokeWidth="1.4"
               strokeLinecap="round"
               vectorEffect="non-scaling-stroke"
@@ -295,10 +315,10 @@ function KoreaExternalMap({
               }
               style={{ transformOrigin: `${node.x}px ${node.y}px` }}
             >
-              <circle cx={node.x} cy={node.y} r="9" fill="#6b8fff" fillOpacity="0.12" />
-              <circle cx={node.x} cy={node.y} r="5.5" fill="#6b8fff" fillOpacity="0.18" />
-              <circle cx={node.x} cy={node.y} r="3.9" fill="#dbe7ff" />
-              <circle cx={node.x} cy={node.y} r="2.2" fill="#315fd4" />
+              <circle cx={node.x} cy={node.y} r="9" fill={PALETTE.regatta} fillOpacity="0.12" />
+              <circle cx={node.x} cy={node.y} r="5.5" fill={PALETTE.regatta} fillOpacity="0.18" />
+              <circle cx={node.x} cy={node.y} r="3.9" fill={PALETTE.cloudDancer} />
+              <circle cx={node.x} cy={node.y} r="2.2" fill={PALETTE.regatta} />
             </motion.g>
           ))}
         </svg>
@@ -389,7 +409,7 @@ export default function NetworkSection() {
           <div className="mx-auto w-full max-w-[1440px] px-6 md:px-12 lg:px-20 xl:px-32">
             <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-16">
               <motion.div style={{ y: contentY }} className="flex flex-col justify-center">
-                <p className="mb-6 text-xs font-semibold uppercase tracking-[0.2em] text-primary-400">
+                <p className="mb-6 text-[15px] font-extrabold uppercase tracking-[0.2em] text-citron-300">
                   {networkData.label}
                 </p>
 
@@ -408,9 +428,8 @@ export default function NetworkSection() {
 
               <motion.div
                 style={{ y: finalMapY, scale: finalMapScale }}
-                className="relative h-[380px] overflow-hidden rounded-[8px] bg-neutral-950/90 md:h-[460px] lg:h-[520px]"
+                className="relative h-[380px] overflow-hidden rounded-[8px] bg-cloud-200 md:h-[460px] lg:h-[520px]"
               >
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_58%_42%,rgba(37,99,235,0.18),transparent_45%),linear-gradient(115deg,rgba(30,64,175,0.12),rgba(10,10,10,0)_48%)]" />
                 <KoreaMapGrid id="networkFinalGrid" />
                 <KoreaExternalMap
                   className="absolute inset-[2%] z-10"

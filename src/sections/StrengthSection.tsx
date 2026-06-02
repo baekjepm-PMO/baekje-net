@@ -7,19 +7,22 @@ const boxes = ['01', '02', '03'];
 const boxLabels = ['NETWORK', 'SPECIALIZED', 'SUPPLY'];
 const boxPalettes = [
   {
-    panel: 'rgba(126, 143, 150, 0.5)',
-    panelSoft: 'rgba(190, 201, 205, 0.34)',
-    edge: 'rgba(78, 94, 102, 0.76)',
+    panel: '#587FBB',
+    panelSoft: '#587FBB',
+    panelRgb: '88 127 187',
+    edge: '#304868',
   },
   {
-    panel: 'rgba(118, 137, 146, 0.5)',
-    panelSoft: 'rgba(184, 197, 202, 0.34)',
-    edge: 'rgba(72, 91, 101, 0.76)',
+    panel: '#5BC8C6',
+    panelSoft: '#5BC8C6',
+    panelRgb: '91 200 198',
+    edge: '#267473',
   },
   {
-    panel: 'rgba(131, 146, 150, 0.5)',
-    panelSoft: 'rgba(194, 202, 204, 0.34)',
-    edge: 'rgba(82, 98, 104, 0.76)',
+    panel: '#E2CF7A',
+    panelSoft: '#E2CF7A',
+    panelRgb: '226 207 122',
+    edge: '#A27627',
   },
 ] as const;
 const boxDetails = [
@@ -109,7 +112,7 @@ export default function StrengthSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, ease }}
-          className="text-xs font-semibold uppercase tracking-[0.2em] text-primary-700"
+          className="text-[15px] font-extrabold uppercase tracking-[0.2em] text-rivulet-400"
         >
           {strengthData.label}
         </motion.p>
@@ -331,6 +334,7 @@ function StrengthDetailPanel({ selectedIndex, onClose }: { selectedIndex: number
   const panelStyle = {
     '--detail-panel': palette.panel,
     '--detail-panel-soft': palette.panelSoft,
+    '--detail-panel-rgb': palette.panelRgb,
     '--detail-edge': palette.edge,
   } as CSSProperties;
 

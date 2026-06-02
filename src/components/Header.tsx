@@ -12,7 +12,6 @@ const navItems = [
       { label: '비전', path: '/company/vision' },
       { label: '연혁', path: '/company/history' },
       { label: '그룹사 소개', path: '/company/group' },
-      { label: '전국 네트워크', path: '/company/network' },
     ],
   },
   {

@@ -9,19 +9,19 @@ const heroStats = [
   {
     value: '1946',
     label: '설립년도',
-    toneClass: 'hero-piece-back--light',
+    toneClass: 'hero-piece-back--regatta',
     icon: '↗',
   },
   {
     value: '1,300',
     label: '임직원수',
-    toneClass: 'hero-piece-back--blue',
+    toneClass: 'hero-piece-back--rivulet',
     icon: '○○○',
   },
   {
     value: '서울 구로구',
     label: '본사 위치',
-    toneClass: 'hero-piece-back--dark',
+    toneClass: 'hero-piece-back--citron',
     icon: '⌁',
   },
 ] as const;
@@ -98,7 +98,6 @@ export default function HeroSection() {
                     <div className="hero-piece-shade" />
                   </div>
                   <div className={`hero-piece-face hero-piece-back ${stat.toneClass}`}>
-                    <span className="hero-piece-icon">{stat.icon}</span>
                     <div>
                       <strong>{stat.value}</strong>
                       <span className="hero-piece-label">{stat.label}</span>
@@ -109,6 +108,13 @@ export default function HeroSection() {
             ))}
           </motion.div>
         </motion.div>
+
+        <motion.p
+          className="hero-about-kicker"
+          style={{ '--hero-about-alpha': splitOpacity } as MotionStyleVars}
+        >
+          About
+        </motion.p>
 
         <motion.div
           style={{ y: textY, '--hero-copy-alpha': textOpacity } as MotionStyleVars}

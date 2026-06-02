@@ -7,7 +7,6 @@ import CompanyOverview from './pages/CompanyOverview';
 import Vision from './pages/Vision';
 import History from './pages/History';
 import GroupCompanies from './pages/GroupCompanies';
-import NationalNetwork from './pages/NationalNetwork';
 import LogisticsService from './pages/LogisticsService';
 import Contact from './pages/Contact';
 import Talent from './pages/Talent';
@@ -34,7 +33,6 @@ function App() {
             <Route path="/company/vision" element={<Vision />} />
             <Route path="/company/history" element={<History />} />
             <Route path="/company/group" element={<GroupCompanies />} />
-            <Route path="/company/network" element={<NationalNetwork />} />
             <Route path="/logistics" element={<LogisticsService />} />
             <Route path="/compliance" element={<CompliancePage title="준법경영" />} />
             <Route path="/compliance/ceo-message" element={<CompliancePage title="CEO 메시지" />} />
