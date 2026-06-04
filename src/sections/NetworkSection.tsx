@@ -16,10 +16,10 @@ const KOREA_MAP_VIEW_BOX = '-40 -42 604 715';
 const GLOBE_AUTO_PLAY_START = 0.08;
 const GLOBE_AUTO_PLAY_END = 0.67;
 const GLOBE_AUTO_PLAY_DURATION = 3.0;
-const CONTENT_REVEAL_START = 0.37;
-const CONTENT_REVEAL_END = 0.45;
+const CONTENT_REVEAL_START = 0.29;
+const CONTENT_REVEAL_END = 0.36;
 const PALETTE = {
-  cloudDancer: '#F0EEE9',
+  cloudDancer: '#F0EFEB',
   cloudDancerDeep: '#E4E3DF',
   stretchLimo: '#2B2C30',
   aquaGray: '#A5B2AA',
@@ -390,8 +390,8 @@ export default function NetworkSection() {
   });
 
   const curtainOpacity = useTransform(sceneProgress, [0, CONTENT_REVEAL_START - 0.03, CONTENT_REVEAL_END], [1, 1, 0]);
-  const globeY = useTransform(sceneProgress, [0, 0.16, 0.28], ['112vh', '32vh', '0vh']);
-  const globeScale = useTransform(sceneProgress, [0, 0.16, 0.28], [0.28, 0.68, 1]);
+  const globeY = useTransform(sceneProgress, [0, 0.075, 0.16], ['112vh', '12vh', '-4vh']);
+  const globeScale = useTransform(sceneProgress, [0, 0.075, 0.16], [0.48, 1.25, 1.68]);
   const globeOpacity = useTransform(sceneProgress, [0, 0.04, 1], [0, 1, 1]);
 
   const layoutY = useTransform(sceneProgress, [CONTENT_REVEAL_START, CONTENT_REVEAL_END], [28, 0]);

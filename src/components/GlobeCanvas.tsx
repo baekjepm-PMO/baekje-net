@@ -1,9 +1,7 @@
 import { useEffect, useRef } from 'react';
 import createGlobe, {
-  type Arc,
   type COBEOptions,
   type Globe,
-  type Marker,
 } from 'cobe';
 
 type MotionProgress = {
@@ -14,7 +12,7 @@ type MotionProgress = {
 type Location = [number, number];
 
 const DEVICE_PIXEL_RATIO_LIMIT = 2;
-const START_LOCATION: Location = [18, 12];
+const START_LOCATION: Location = [32, 102];
 const KOREA_FOCUS_LOCATION: Location = [36.4, 127.7];
 const START_PHI = longitudeToPhi(START_LOCATION[1]);
 const TARGET_PHI = longitudeToPhi(KOREA_FOCUS_LOCATION[1]);
@@ -22,29 +20,6 @@ const START_THETA = degToRad(START_LOCATION[0]);
 const TARGET_THETA = degToRad(KOREA_FOCUS_LOCATION[0]);
 const REGATTA = [0.29, 0.48, 0.72] as const;
 const REGATTA_DARK = [0.19, 0.28, 0.41] as const;
-const RIVULET = [0.36, 0.78, 0.76] as const;
-const CITRON = [0.89, 0.8, 0.46] as const;
-
-const GLOBE_MARKERS: Marker[] = [
-  { location: [37.57, 126.98], size: 0.075, color: [...CITRON] },
-  { location: [35.68, 139.65], size: 0.045 },
-  { location: [31.23, 121.47], size: 0.048 },
-  { location: [1.29, 103.85], size: 0.04 },
-  { location: [25.2, 55.27], size: 0.035 },
-  { location: [51.51, -0.13], size: 0.04 },
-  { location: [40.71, -74.01], size: 0.044 },
-  { location: [34.05, -118.24], size: 0.036 },
-];
-
-const GLOBE_ARCS: Arc[] = [
-  { from: [37.57, 126.98], to: [35.68, 139.65] },
-  { from: [37.57, 126.98], to: [31.23, 121.47] },
-  { from: [37.57, 126.98], to: [1.29, 103.85] },
-  { from: [37.57, 126.98], to: [25.2, 55.27] },
-  { from: [37.57, 126.98], to: [51.51, -0.13] },
-  { from: [37.57, 126.98], to: [40.71, -74.01] },
-  { from: [37.57, 126.98], to: [34.05, -118.24] },
-];
 
 function degToRad(value: number) {
   return (value * Math.PI) / 180;
@@ -98,11 +73,11 @@ function makeGlobeOptions(width: number, height: number): COBEOptions {
     mapBrightness: 3.9,
     mapBaseBrightness: 0.08,
     baseColor: [...REGATTA_DARK],
-    markerColor: [...CITRON],
+    markerColor: [...REGATTA],
     glowColor: [...REGATTA],
-    markers: GLOBE_MARKERS,
-    arcs: GLOBE_ARCS,
-    arcColor: [...RIVULET],
+    markers: [],
+    arcs: [],
+    arcColor: [...REGATTA],
     arcWidth: 0.48,
     arcHeight: 0.34,
     markerElevation: 0.035,
@@ -172,26 +147,23 @@ export default function GlobeCanvas({
       updateSize();
 
       const currentProgress = scrollProgressRef.current;
-      const focus = lateEaseOut((currentProgress - 0.08) / 0.22, 0.88);
-      const koreaCentering = smoothstep((currentProgress - 0.23) / 0.13);
-      const descent = smoothstep((currentProgress - 0.34) / 0.16);
+      const focus = lateEaseOut((currentProgress - 0.045) / 0.105, 0.88);
+      const koreaCentering = smoothstep((currentProgress - 0.2) / 0.1);
+      const descent = smoothstep((currentProgress - 0.21) / 0.055);
       const elapsedSeconds = (now - startTime) / 1000;
-      const ambientSpin = elapsedSeconds * 0.13 * (1 - focus);
+      const ambientSpin = elapsedSeconds * 0.018 * (1 - focus);
 
       globe?.update({
         phi: lerpAngle(START_PHI, TARGET_PHI, focus) + ambientSpin,
         theta: lerp(START_THETA, TARGET_THETA, focus),
-        scale: lerp(0.9, 1.08, focus),
+        scale: lerp(1.12, 1.72, focus),
         mapBrightness: lerp(2.7, 4.35, koreaCentering),
-        offset: [
-          lerp(0, width * 0.035, koreaCentering),
-          lerp(0, height * 0.42, descent),
-        ],
-        opacity: lerp(1, 0.34, descent),
+        offset: [0, 0],
+        opacity: lerp(1, 0, descent),
       });
 
-      surface.style.opacity = String(lerp(1, 0.46, descent));
-      surface.style.transform = `translate3d(0, ${descent * 34}vh, 0)`;
+      surface.style.opacity = String(lerp(1, 0, descent));
+      surface.style.transform = 'translate3d(0, 0, 0)';
       animationFrameId = requestAnimationFrame(render);
     };
 
@@ -210,8 +182,6 @@ export default function GlobeCanvas({
 
   return (
     <div className={`relative ${className ?? ''}`} style={{ lineHeight: 0 }}>
-      <div className="absolute inset-[18%] rounded-full bg-regatta-500/20 blur-3xl" />
-      <div className="absolute inset-[28%] rounded-full bg-rivulet-300/10 blur-2xl" />
       <div
         ref={surfaceRef}
         className="relative h-full w-full will-change-transform"

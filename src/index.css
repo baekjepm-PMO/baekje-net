@@ -10,14 +10,20 @@
     --color-regatta: #497AB7;
     --color-rinsing-rivulet: #5CC6C3;
     --color-dusky-citron: #E3CC81;
-    --color-cloud-dancer: #F0EEE9;
+    --color-cloud-dancer: #F0EFEB;
+    --color-bright-white: #F4F9FF;
+    --color-paper-white: #F5F7F6;
+    --color-page-bg: var(--color-paper-white);
     --color-stretch-limo: #2B2C30;
     --color-text-black: #000000;
     --rgb-aqua-gray: 165 178 170;
     --rgb-regatta: 73 122 183;
     --rgb-rinsing-rivulet: 92 198 195;
     --rgb-dusky-citron: 227 204 129;
-    --rgb-cloud-dancer: 240 238 233;
+    --rgb-cloud-dancer: 240 239 235;
+    --rgb-bright-white: 244 249 255;
+    --rgb-paper-white: 245 247 246;
+    --rgb-page-bg: 245 247 246;
     --rgb-stretch-limo: 43 44 48;
   }
 
@@ -29,7 +35,7 @@
   body {
     font-family: 'Noto Sans KR', 'Inter', sans-serif;
     color: var(--color-text-black);
-    background-color: var(--color-cloud-dancer);
+    background-color: var(--color-page-bg);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
@@ -55,7 +61,7 @@
   .hero-scroll-section {
     position: relative;
     height: 210vh;
-    background: var(--color-cloud-dancer);
+    background: var(--color-page-bg);
   }
 
   .hero-sticky-stage {
@@ -63,9 +69,7 @@
     top: 0;
     height: 100vh;
     overflow: hidden;
-    background:
-      radial-gradient(circle at 50% 34%, rgb(var(--rgb-regatta) / 0.12), transparent 34%),
-      var(--color-cloud-dancer);
+    background: var(--color-page-bg);
   }
 
   .hero-frame-shell {
@@ -632,6 +636,8 @@
     --box-neg-half-d: -85px;
     --box-flap-end: 85px;
     --box-flap-side: 62px;
+    --box-flap-cover-lift: 0.6px;
+    --box-flap-hinge-overlap: 2px;
     --box-scale: 0.98;
     position: relative;
     width: min(100%, 360px);
@@ -1322,25 +1328,27 @@
   .strength-box-flap--back,
   .strength-box-flap--front {
     left: calc(50% - var(--box-half-w));
+    z-index: 4;
     width: var(--box-w);
-    height: var(--box-flap-end);
+    height: calc(var(--box-flap-end) + var(--box-flap-hinge-overlap));
   }
 
   .strength-box-flap--back {
-    top: calc(50% - var(--box-half-d));
-    transform-origin: 50% 0%;
-    transform: translateZ(var(--box-h)) rotateX(180deg);
+    top: calc(50% - var(--box-half-d) - var(--box-flap-hinge-overlap));
+    transform-origin: 50% var(--box-flap-hinge-overlap);
+    transform: translateZ(calc(var(--box-h) + var(--box-flap-cover-lift))) rotateX(180deg);
   }
 
   .strength-box-flap--front {
     top: calc(50% + var(--box-half-d) - var(--box-flap-end));
-    transform-origin: 50% 100%;
-    transform: translateZ(var(--box-h)) rotateX(-180deg);
+    transform-origin: 50% calc(100% - var(--box-flap-hinge-overlap));
+    transform: translateZ(calc(var(--box-h) + var(--box-flap-cover-lift))) rotateX(-180deg);
   }
 
   .strength-box-flap--left,
   .strength-box-flap--right {
     top: calc(50% - var(--box-half-d));
+    z-index: 3;
     width: var(--box-flap-side);
     height: var(--box-d);
     transition-delay: 100ms;
@@ -1366,8 +1374,8 @@
 
   .strength-box-stage:is(:hover, :focus-visible) .strength-box-flap--back,
   .strength-box-stage:is(:hover, :focus-visible) .strength-box-flap--front {
-    transition-delay: 100ms;
-    transform: translateZ(var(--box-h)) rotateX(0deg);
+    transition-delay: 160ms;
+    transform: translateZ(calc(var(--box-h) + var(--box-flap-cover-lift))) rotateX(0deg);
   }
 
   .strength-box-stage:is(:hover, :focus-visible) .strength-box-piece::before {
