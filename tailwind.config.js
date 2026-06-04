@@ -3,7 +3,7 @@ const pantone = {
   regatta: '#497AB7',
   rinsingRivulet: '#5CC6C3',
   duskyCitron: '#E3CC81',
-  cloudDancer: '#F0EEE9',
+  cloudDancer: '#F0EFEB',
   stretchLimo: '#2B2C30',
 };
 

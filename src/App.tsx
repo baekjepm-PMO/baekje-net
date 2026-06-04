@@ -25,7 +25,7 @@ function App() {
   return (
     <BrowserRouter>
       <ScrollToTop />
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-[var(--color-page-bg)]">
         <Header />
         <main>
           <Routes>

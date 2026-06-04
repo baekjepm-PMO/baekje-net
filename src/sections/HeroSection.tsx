@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { motion, useScroll, useTransform, type MotionStyle, type MotionValue } from 'framer-motion';
+import { motion, useScroll, useSpring, useTransform, type MotionStyle, type MotionValue } from 'framer-motion';
 import { heroData } from '../data/mainPage';
 
 const ease = [0.25, 0.1, 0.25, 1] as const;
@@ -32,23 +32,29 @@ export default function HeroSection() {
     target: containerRef,
     offset: ['start start', 'end start'],
   });
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 120,
+    damping: 34,
+    mass: 0.22,
+    restDelta: 0.0001,
+  });
 
-  const frameScale = useTransform(scrollYProgress, [0, 0.06, 0.09], [1, 0.68, 0.58]);
-  const borderRadius = useTransform(scrollYProgress, [0, 0.055, 0.085], [0, 8, 3]);
-  const textOpacity = useTransform(scrollYProgress, [0, 0.025, 0.045], [1, 0.18, 0]);
-  const textY = useTransform(scrollYProgress, [0, 0.08], [0, -72]);
-  const singleOpacity = useTransform(scrollYProgress, [0, 0.13, 0.18], [1, 1, 0]);
-  const splitOpacity = useTransform(scrollYProgress, [0.115, 0.165], [0, 1]);
-  const leftX = useTransform(scrollYProgress, [0.16, 0.22], [0, -84]);
-  const centerX = useTransform(scrollYProgress, [0.16, 0.22], [0, 0]);
-  const rightX = useTransform(scrollYProgress, [0.16, 0.22], [0, 84]);
-  const leftTilt = useTransform(scrollYProgress, [0, 1], [0, 0]);
-  const centerTilt = useTransform(scrollYProgress, [0, 1], [0, 0]);
-  const rightTilt = useTransform(scrollYProgress, [0, 1], [0, 0]);
-  const leftFlip = useTransform(scrollYProgress, [0.23, 0.32], [0, 180]);
-  const centerFlip = useTransform(scrollYProgress, [0.225, 0.315], [0, 180]);
-  const rightFlip = useTransform(scrollYProgress, [0.235, 0.325], [0, 180]);
-  const scrollIndicatorOpacity = useTransform(scrollYProgress, [0, 0.06], [1, 0]);
+  const frameScale = useTransform(smoothProgress, [0, 0.08, 0.13], [1, 0.7, 0.58]);
+  const borderRadius = useTransform(smoothProgress, [0, 0.075, 0.12], [0, 8, 3]);
+  const textOpacity = useTransform(smoothProgress, [0, 0.045, 0.08], [1, 0.18, 0]);
+  const textY = useTransform(smoothProgress, [0, 0.12], [0, -72]);
+  const singleOpacity = useTransform(smoothProgress, [0, 0.16, 0.24], [1, 1, 0]);
+  const splitOpacity = useTransform(smoothProgress, [0.16, 0.28], [0, 1]);
+  const leftX = useTransform(smoothProgress, [0.26, 0.38], [0, -84]);
+  const centerX = useTransform(smoothProgress, [0.26, 0.38], [0, 0]);
+  const rightX = useTransform(smoothProgress, [0.26, 0.38], [0, 84]);
+  const leftTilt = useTransform(smoothProgress, [0, 1], [0, 0]);
+  const centerTilt = useTransform(smoothProgress, [0, 1], [0, 0]);
+  const rightTilt = useTransform(smoothProgress, [0, 1], [0, 0]);
+  const leftFlip = useTransform(smoothProgress, [0.4, 0.58], [0, 180]);
+  const centerFlip = useTransform(smoothProgress, [0.385, 0.565], [0, 180]);
+  const rightFlip = useTransform(smoothProgress, [0.415, 0.595], [0, 180]);
+  const scrollIndicatorOpacity = useTransform(smoothProgress, [0, 0.08], [1, 0]);
   const pieceMotion = [
     { x: leftX, rotateZ: leftTilt, rotateY: leftFlip, backgroundPosition: '0% 50%' },
     { x: centerX, rotateZ: centerTilt, rotateY: centerFlip, backgroundPosition: '50% 50%' },

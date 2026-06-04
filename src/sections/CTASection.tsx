@@ -10,7 +10,7 @@ export default function CTASection() {
   const isInView = useInView(ref, { once: true, margin: '-80px' });
 
   return (
-    <section ref={ref} className="bg-white py-10 md:py-14">
+    <section ref={ref} className="bg-[var(--color-page-bg)] py-10 md:py-14">
       <div className="max-w-[1440px] mx-auto px-6 md:px-12 lg:px-20 xl:px-32">
         <div className="flex flex-col md:flex-row gap-4 justify-center max-w-2xl mx-auto">
           {ctaData.buttons.map((btn, i) => (
