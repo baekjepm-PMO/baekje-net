@@ -410,7 +410,7 @@ export default function NetworkSection() {
   const finalMapScale = useTransform(sceneProgress, [CONTENT_REVEAL_START, CONTENT_REVEAL_END], [0.985, 1]);
 
   return (
-    <div id="network" ref={containerRef} className="relative bg-blue-fusion text-cloud-dancer" style={{ height: '260vh' }}>
+    <div id="network" ref={containerRef} className="relative bg-blue-fusion text-cloud-dancer" style={{ height: '340vh' }}>
       <div className="sticky top-0 h-screen overflow-hidden">
         <div className="absolute inset-0 bg-blue-fusion" />
 

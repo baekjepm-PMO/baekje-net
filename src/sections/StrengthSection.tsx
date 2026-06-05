@@ -27,19 +27,19 @@ const boxPalettes = [
 =======
     panel: 'var(--color-blue-fusion)',
     panelSoft: 'var(--color-baltic-sea)',
-    panelRgb: '83 104 124',
+    panelRgb: 'var(--rgb-blue-fusion)',
     edge: 'var(--color-hematite)',
   },
   {
     panel: 'var(--color-veiled-vista)',
     panelSoft: 'var(--color-baltic-sea)',
-    panelRgb: '203 232 206',
+    panelRgb: 'var(--rgb-veiled-vista)',
     edge: 'var(--color-blue-fusion)',
   },
   {
     panel: 'var(--color-golden-mist)',
     panelSoft: 'var(--color-quiet-violet)',
-    panelRgb: '215 207 146',
+    panelRgb: 'var(--rgb-golden-mist)',
     edge: 'var(--color-hematite)',
 >>>>>>> efbbb1c (han commit)
   },

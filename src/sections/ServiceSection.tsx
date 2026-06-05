@@ -29,9 +29,9 @@ export default function ServiceSection() {
   //   0.40        : leftmost card disappears instantly; fullscreen image (same photo) takes over
   //   0.40 → 0.65 : pure fullscreen — left/center content visible, right side waiting for white card
   //   0.65 → 1.00 : white card slides in on right, big label appears bottom-left, etc.
-  const activeCardScale = useTransform(scrollYProgress, [0.2, 0.4], [1, 3.5]);
-  const inactiveCardOpacity = useTransform(scrollYProgress, [0.2, 0.28], [1, 0]);
-  const cardsOpacity = useTransform(scrollYProgress, (v) => (v >= 0.4 ? 0 : 1));
+  const activeCardScale = useTransform(scrollYProgress, [0.26, 0.52], [1, 3.5]);
+  const inactiveCardOpacity = useTransform(scrollYProgress, [0.26, 0.36], [1, 0]);
+  const cardsOpacity = useTransform(scrollYProgress, (v) => (v >= 0.52 ? 0 : 1));
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -40,7 +40,7 @@ export default function ServiceSection() {
 
   useEffect(() => {
     const unsubscribe = scrollYProgress.on('change', (v) => {
-      if (v > 0.65) setUiVisible(true);
+      if (v > 0.74) setUiVisible(true);
     });
     return unsubscribe;
   }, [scrollYProgress]);
@@ -112,7 +112,7 @@ export default function ServiceSection() {
       </div>
 
       {/* Tall scroll container — 300vh of sticky scroll for: dwell, expansion, fade, pure fullscreen pause, then long viewing time */}
-      <div ref={tallContainerRef} className="relative h-[400vh]">
+      <div ref={tallContainerRef} className="relative h-[520vh]">
         {/* Sticky inner — pins the showcase to the viewport while user scrolls through the container */}
         <div className="sticky top-0 h-screen w-full overflow-hidden">
         {/* Background — single image whose src changes on slide swap. No fade,

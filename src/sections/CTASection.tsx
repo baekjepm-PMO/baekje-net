@@ -24,14 +24,10 @@ export default function CTASection() {
               initial={{ opacity: 0, y: 30 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.8, delay: 0.2 + i * 0.12, ease }}
-              className={`flex items-center justify-between px-7 md:px-8 py-5 rounded-lg border transition-all duration-300 group shadow-premium-sm ${
-                i === 0
-                  ? 'border-blue-fusion bg-blue-fusion text-cloud-dancer hover:bg-hematite hover:border-hematite'
-                  : 'border-blue-fusion bg-cloud-dancer text-blue-fusion hover:bg-veiled-vista'
-              }`}
+              className={`palette-cta-button ${i === 0 ? 'palette-cta-button--primary' : 'palette-cta-button--secondary'}`}
             >
               <div>
-                <p className={`text-xs mb-1 transition-colors duration-300 ${i === 0 ? 'text-cloud-dancer/65' : 'text-hematite'}`}>
+                <p className="palette-cta-button-sub">
                   {btn.sub}
                 </p>
                 <p className="text-base font-semibold">{btn.label}</p>

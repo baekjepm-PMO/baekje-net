@@ -44,10 +44,15 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
   const location = useLocation();
+<<<<<<< HEAD
   const hasSolidHeader =
     isScrolled ||
     location.pathname === '/company/overview' ||
     location.pathname === '/company/ceo-message';
+=======
+  const isPalettePreviewPage = location.pathname === '/' || location.pathname.startsWith('/palette/');
+  const useSolidHeader = isScrolled || isPalettePreviewPage;
+>>>>>>> bca57a6 (git coomit)
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -64,12 +69,17 @@ export default function Header() {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${
 <<<<<<< HEAD
+<<<<<<< HEAD
         hasSolidHeader
           ? 'bg-white/95 backdrop-blur-lg shadow-[0_1px_0_rgba(0,0,0,0.06)]'
 =======
         isScrolled
           ? 'bg-cloud-dancer/95 backdrop-blur-lg shadow-[0_1px_0_rgba(155,150,151,0.38)]'
 >>>>>>> efbbb1c (han commit)
+=======
+        useSolidHeader
+          ? 'site-header-scrolled'
+>>>>>>> bca57a6 (git coomit)
           : 'bg-transparent'
       }`}
     >
@@ -80,10 +90,14 @@ export default function Header() {
             <span
               className={`text-xl font-bold tracking-tight transition-colors duration-700 ${
 <<<<<<< HEAD
+<<<<<<< HEAD
                 hasSolidHeader ? 'text-neutral-900' : 'text-white'
 =======
                 isScrolled ? 'text-blue-fusion' : 'text-cloud-dancer'
 >>>>>>> efbbb1c (han commit)
+=======
+                useSolidHeader ? 'text-blue-fusion' : 'text-cloud-dancer'
+>>>>>>> bca57a6 (git coomit)
               }`}
             >
               백제약품
@@ -111,6 +125,7 @@ export default function Header() {
                   }}
                   className={`px-3.5 py-1.5 text-[13px] font-medium transition-colors duration-300 rounded-lg ${
 <<<<<<< HEAD
+<<<<<<< HEAD
                     hasSolidHeader
                       ? 'text-neutral-600 hover:text-neutral-900'
                       : 'text-white/70 hover:text-white'
@@ -121,11 +136,14 @@ export default function Header() {
                         : 'text-white'
 =======
                     isScrolled
+=======
+                    useSolidHeader
+>>>>>>> bca57a6 (git coomit)
                       ? 'text-hematite hover:text-blue-fusion'
                       : 'text-cloud-dancer/75 hover:text-cloud-dancer'
                   } ${
                     location.pathname.startsWith(item.path)
-                      ? isScrolled
+                      ? useSolidHeader
                         ? 'text-blue-fusion'
                         : 'text-cloud-dancer'
 >>>>>>> efbbb1c (han commit)
@@ -167,11 +185,15 @@ export default function Header() {
             <button
               className={`ml-3 px-3 py-1.5 text-[11px] font-semibold tracking-wider rounded-full border transition-all duration-300 ${
 <<<<<<< HEAD
+<<<<<<< HEAD
                 hasSolidHeader
                   ? 'border-neutral-200 text-neutral-500 hover:border-neutral-400 hover:text-neutral-900'
                   : 'border-white/20 text-white/50 hover:border-white/40 hover:text-white'
 =======
                 isScrolled
+=======
+                useSolidHeader
+>>>>>>> bca57a6 (git coomit)
                   ? 'border-cloud-cover/50 text-hematite hover:border-golden-mist hover:text-blue-fusion'
                   : 'border-cloud-dancer/25 text-cloud-dancer/60 hover:border-golden-mist hover:text-cloud-dancer'
 >>>>>>> efbbb1c (han commit)
@@ -188,6 +210,7 @@ export default function Header() {
           >
             {mobileOpen ? (
 <<<<<<< HEAD
+<<<<<<< HEAD
               <X className={hasSolidHeader ? 'text-neutral-900' : 'text-white'} size={22} />
             ) : (
               <Menu className={hasSolidHeader ? 'text-neutral-900' : 'text-white'} size={22} />
@@ -196,6 +219,11 @@ export default function Header() {
             ) : (
               <Menu className={isScrolled ? 'text-blue-fusion' : 'text-cloud-dancer'} size={22} />
 >>>>>>> efbbb1c (han commit)
+=======
+              <X className={useSolidHeader ? 'text-blue-fusion' : 'text-cloud-dancer'} size={22} />
+            ) : (
+              <Menu className={useSolidHeader ? 'text-blue-fusion' : 'text-cloud-dancer'} size={22} />
+>>>>>>> bca57a6 (git coomit)
             )}
           </button>
         </div>

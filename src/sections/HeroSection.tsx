@@ -39,6 +39,7 @@ export default function HeroSection() {
     restDelta: 0.0001,
   });
 
+<<<<<<< HEAD
   const frameScale = useTransform(smoothProgress, [0, 0.07, 0.115], [1, 0.7, 0.58]);
   const borderRadius = useTransform(smoothProgress, [0, 0.065, 0.105], [0, 8, 3]);
   const textOpacity = useTransform(smoothProgress, [0, 0.04, 0.07], [1, 0.18, 0]);
@@ -55,6 +56,24 @@ export default function HeroSection() {
   const centerFlip = useTransform(smoothProgress, [0.32, 0.455], [0, 180]);
   const rightFlip = useTransform(smoothProgress, [0.35, 0.485], [0, 180]);
   const scrollIndicatorOpacity = useTransform(smoothProgress, [0, 0.08], [1, 0]);
+=======
+  const frameScale = useTransform(scrollYProgress, [0, 0.1, 0.15], [1, 0.68, 0.58]);
+  const borderRadius = useTransform(scrollYProgress, [0, 0.095, 0.145], [0, 8, 3]);
+  const textOpacity = useTransform(scrollYProgress, [0, 0.045, 0.075], [1, 0.18, 0]);
+  const textY = useTransform(scrollYProgress, [0, 0.13], [0, -72]);
+  const singleOpacity = useTransform(scrollYProgress, [0, 0.2, 0.28], [1, 1, 0]);
+  const splitOpacity = useTransform(scrollYProgress, [0.19, 0.27], [0, 1]);
+  const leftX = useTransform(scrollYProgress, [0.26, 0.36], [0, -84]);
+  const centerX = useTransform(scrollYProgress, [0.26, 0.36], [0, 0]);
+  const rightX = useTransform(scrollYProgress, [0.26, 0.36], [0, 84]);
+  const leftTilt = useTransform(scrollYProgress, [0, 1], [0, 0]);
+  const centerTilt = useTransform(scrollYProgress, [0, 1], [0, 0]);
+  const rightTilt = useTransform(scrollYProgress, [0, 1], [0, 0]);
+  const leftFlip = useTransform(scrollYProgress, [0.38, 0.52], [0, 180]);
+  const centerFlip = useTransform(scrollYProgress, [0.37, 0.51], [0, 180]);
+  const rightFlip = useTransform(scrollYProgress, [0.39, 0.53], [0, 180]);
+  const scrollIndicatorOpacity = useTransform(scrollYProgress, [0, 0.1], [1, 0]);
+>>>>>>> bca57a6 (git coomit)
   const pieceMotion = [
     { x: leftX, rotateZ: leftTilt, rotateY: leftFlip, backgroundPosition: '0% 50%' },
     { x: centerX, rotateZ: centerTilt, rotateY: centerFlip, backgroundPosition: '50% 50%' },
