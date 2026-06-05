@@ -19,12 +19,22 @@ const GLOBE_AUTO_PLAY_DURATION = 3.0;
 const CONTENT_REVEAL_START = 0.29;
 const CONTENT_REVEAL_END = 0.36;
 const PALETTE = {
+<<<<<<< HEAD
   cloudDancer: '#F0EFEB',
   cloudDancerDeep: '#E4E3DF',
   stretchLimo: '#2B2C30',
   aquaGray: '#A5B2AA',
   regatta: '#497AB7',
   regattaDark: '#304868',
+=======
+  cloudDancer: 'var(--color-cloud-dancer)',
+  veiledVista: 'var(--color-veiled-vista)',
+  balticSea: 'var(--color-baltic-sea)',
+  goldenMist: 'var(--color-golden-mist)',
+  cloudCover: 'var(--color-cloud-cover)',
+  hematite: 'var(--color-hematite)',
+  blueFusion: 'var(--color-blue-fusion)',
+>>>>>>> efbbb1c (han commit)
 };
 const NETWORK_TITLE_LINES = ['대한민국 헬스케어를', '연결하는 유통 네트워크'];
 const NETWORK_NODE_POOL = [
@@ -69,7 +79,7 @@ function KoreaMapGrid({ id }: { id: string }) {
       <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <pattern id={id} width="40" height="40" patternUnits="userSpaceOnUse">
-            <path d="M 40 0 L 0 0 0 40" fill="none" stroke={PALETTE.aquaGray} strokeWidth="0.5" />
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke={PALETTE.cloudCover} strokeWidth="0.5" />
           </pattern>
         </defs>
         <rect width="100%" height="100%" fill={`url(#${id})`} />
@@ -137,12 +147,12 @@ function TravelingDot({
       <g transform={`rotate(${angle})`}>
         <path
           d={flowMarkPath}
-          fill={PALETTE.regatta}
+          fill={PALETTE.balticSea}
           fillOpacity="0.18"
           transform="scale(1.16 1.22)"
         />
       {/* 중간 글로우 */}
-        <path d={flowMarkPath} fill={PALETTE.regatta} />
+        <path d={flowMarkPath} fill={PALETTE.balticSea} />
       </g>
       {/* 핵심 흰 점 */}
     </motion.g>
@@ -175,7 +185,7 @@ function KoreaExternalMap({
   return (
     <div className={className}>
       <div className="relative h-full w-full">
-        {glow && <div className="absolute inset-[10%] rounded-full bg-regatta-600/10 blur-3xl" />}
+        {glow && <div className="absolute inset-[10%] rounded-full bg-baltic-sea/10 blur-3xl" />}
         <svg
           aria-hidden="true"
           className="absolute inset-0 h-full w-full opacity-95"
@@ -191,7 +201,7 @@ function KoreaExternalMap({
               key={`shadow-${location.id}`}
               d={location.path}
               fill="none"
-              stroke={PALETTE.cloudDancerDeep}
+              stroke={PALETTE.cloudDancer}
               strokeOpacity="0.82"
               strokeWidth="3"
               strokeLinecap="round"
@@ -203,9 +213,9 @@ function KoreaExternalMap({
             <path
               key={location.id}
               d={location.path}
-              fill={PALETTE.aquaGray}
+              fill={PALETTE.veiledVista}
               fillOpacity="0.5"
-              stroke={PALETTE.regatta}
+              stroke={PALETTE.blueFusion}
               strokeOpacity="0.58"
               strokeWidth="1.3"
               strokeLinecap="round"
@@ -234,7 +244,7 @@ function KoreaExternalMap({
               y1={segment.from.y}
               x2={segment.to.x}
               y2={segment.to.y}
-              stroke={PALETTE.regatta}
+              stroke={PALETTE.balticSea}
               strokeWidth="1.4"
               strokeLinecap="round"
               vectorEffect="non-scaling-stroke"
@@ -311,19 +321,19 @@ function KoreaExternalMap({
               }
               style={{ transformOrigin: `${node.x}px ${node.y}px` }}
             >
-              <circle cx={node.x} cy={node.y} r="8.5" fill={PALETTE.regatta} fillOpacity="0.16" />
+              <circle cx={node.x} cy={node.y} r="8.5" fill={PALETTE.balticSea} fillOpacity="0.16" />
               <circle cx={node.x} cy={node.y} r="5.2" fill={PALETTE.cloudDancer} />
               <circle
                 cx={node.x}
                 cy={node.y}
                 r="4.2"
                 fill="none"
-                stroke={PALETTE.regatta}
+                stroke={PALETTE.blueFusion}
                 strokeOpacity="0.78"
                 strokeWidth="1.2"
                 vectorEffect="non-scaling-stroke"
               />
-              <circle cx={node.x} cy={node.y} r="2.7" fill={PALETTE.regatta} />
+              <circle cx={node.x} cy={node.y} r="2.7" fill={PALETTE.balticSea} />
             </motion.g>
           ))}
         </svg>
@@ -400,9 +410,9 @@ export default function NetworkSection() {
   const finalMapScale = useTransform(sceneProgress, [CONTENT_REVEAL_START, CONTENT_REVEAL_END], [0.985, 1]);
 
   return (
-    <div id="network" ref={containerRef} className="relative bg-black text-white" style={{ height: '260vh' }}>
+    <div id="network" ref={containerRef} className="relative bg-blue-fusion text-cloud-dancer" style={{ height: '260vh' }}>
       <div className="sticky top-0 h-screen overflow-hidden">
-        <div className="absolute inset-0 bg-black" />
+        <div className="absolute inset-0 bg-blue-fusion" />
 
         <motion.div
           aria-hidden={!contentRevealed}
@@ -414,7 +424,7 @@ export default function NetworkSection() {
           <div className="mx-auto w-full max-w-[1440px] px-6 md:px-12 lg:px-20 xl:px-32">
             <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-16">
               <motion.div style={{ y: contentY }} className="flex flex-col justify-center">
-                <p className="mb-6 text-[15px] font-extrabold uppercase tracking-[0.2em] text-citron-300">
+                <p className="mb-6 text-[15px] font-extrabold uppercase tracking-[0.2em] text-golden-mist">
                   {networkData.label}
                 </p>
 
@@ -426,14 +436,14 @@ export default function NetworkSection() {
                   ))}
                 </h2>
 
-                <p className="text-lg font-light text-white/50">
+                <p className="text-lg font-light text-cloud-dancer/70">
                   {networkData.subtitle}
                 </p>
               </motion.div>
 
               <motion.div
                 style={{ y: finalMapY, scale: finalMapScale }}
-                className="relative h-[380px] overflow-hidden rounded-[8px] bg-cloud-200 md:h-[460px] lg:h-[520px]"
+                className="relative h-[380px] overflow-hidden rounded-[8px] border border-cloud-dancer/20 bg-cloud-dancer shadow-premium md:h-[460px] lg:h-[520px]"
               >
                 <KoreaMapGrid id="networkFinalGrid" />
                 <KoreaExternalMap
@@ -449,7 +459,7 @@ export default function NetworkSection() {
 
         <motion.div
           style={{ opacity: curtainOpacity }}
-          className="absolute inset-0 z-20 bg-black pointer-events-none"
+          className="absolute inset-0 z-20 bg-blue-fusion pointer-events-none"
         />
 
         <motion.div

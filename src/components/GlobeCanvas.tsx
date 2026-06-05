@@ -47,14 +47,23 @@ const NASA_TERRA_FALLBACK_TEXTURE =
 const NASA_KOREA_DETAIL_TEXTURE =
   '/assets/maps/nasa-korea-detail-2025-04-29.png?v=5';
 const USE_NASA_DATED_TEXTURE = true;
+<<<<<<< HEAD
 const OCEAN_COLOR = '#252A2C';
 const LAND_BASE_COLOR = '#304868';
 const LAND_DARK_COLOR = { r: 0x34, g: 0x3a, b: 0x3d };
 const LAND_MID_COLOR = { r: 0x58, g: 0x7f, b: 0xbb };
 const LAND_BRIGHT_COLOR = { r: 0x5b, g: 0xc8, b: 0xc6 };
 const LIGHT_R = 226;
+=======
+const OCEAN_COLOR = '#53687C';
+const LAND_BASE_COLOR = '#CBE8CE';
+const LAND_DARK_COLOR = { r: 0x78, g: 0x74, b: 0x70 };
+const LAND_MID_COLOR = { r: 0x7b, g: 0xb7, b: 0xdb };
+const LAND_BRIGHT_COLOR = { r: 0xd7, g: 0xcf, b: 0x92 };
+const LIGHT_R = 215;
+>>>>>>> efbbb1c (han commit)
 const LIGHT_G = 207;
-const LIGHT_B = 122;
+const LIGHT_B = 146;
 const KOREA_DETAIL_POINT_SCALE = 0.5;
 const REGIONAL_NIGHT_POINT_COUNT = 12000;
 

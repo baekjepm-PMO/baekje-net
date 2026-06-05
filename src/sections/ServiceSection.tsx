@@ -73,14 +73,18 @@ export default function ServiceSection() {
   const active = serviceData.showcases[activeIndex];
 
   return (
+<<<<<<< HEAD
     <section ref={sectionRef} className="relative bg-[var(--color-page-bg)] text-neutral-900">
+=======
+    <section ref={sectionRef} className="relative bg-cloud-dancer text-blue-fusion">
+>>>>>>> efbbb1c (han commit)
       {/* Heading */}
       <div ref={headingRef} className="relative z-10 -mb-48 max-w-[1440px] mx-auto px-6 md:-mb-56 md:px-12 lg:-mb-64 lg:px-20 xl:px-32 pt-24 md:pt-32 pb-6 md:pb-8">
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, ease }}
-          className="text-regatta-600 text-[15px] font-extrabold tracking-[0.2em] uppercase mb-6"
+          className="text-baltic-sea text-[15px] font-extrabold tracking-[0.2em] uppercase mb-6"
         >
           {serviceData.label}
         </motion.p>
@@ -100,7 +104,7 @@ export default function ServiceSection() {
             initial={{ opacity: 0, y: 22 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8, delay: 0.28, ease }}
-            className="mt-5 max-w-6xl text-base font-medium leading-[1.75] text-neutral-600 md:text-lg xl:max-w-none xl:whitespace-nowrap"
+            className="mt-5 max-w-6xl text-base font-medium leading-[1.75] text-hematite md:text-lg xl:max-w-none xl:whitespace-nowrap"
           >
             {serviceData.subDescription}
           </motion.p>
@@ -113,20 +117,14 @@ export default function ServiceSection() {
         <div className="sticky top-0 h-screen w-full overflow-hidden">
         {/* Background — single image whose src changes on slide swap. No fade,
             no overlay, no transparency. Ken Burns scale resets via key on activeIndex. */}
-        <motion.div
-          key={activeIndex}
-          initial={{ scale: 1.0 }}
-          animate={{ scale: 1.12 }}
-          transition={{ scale: { duration: SLIDE_DURATION / 1000, ease: 'linear' } }}
-          className="absolute inset-0"
-        >
+        <motion.div key={activeIndex} className="absolute inset-0">
           <img
             src={active.image}
             alt={active.title}
             className="w-full h-full object-cover"
           />
         </motion.div>
-        <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/30 to-black/40 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/25 to-black/30 pointer-events-none" />
         {/* Preload other slide images so the next swap is instant */}
         <div className="hidden" aria-hidden="true">
           {serviceData.showcases.map((s, i) => (
@@ -150,7 +148,7 @@ export default function ServiceSection() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -40 }}
                 transition={{ duration: 0.8, ease }}
-                className="text-white text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-extrabold tracking-tight uppercase leading-none"
+                className="text-cloud-dancer text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-extrabold tracking-tight uppercase leading-none"
               >
                 {active.bigLabel}
               </motion.h2>
@@ -160,10 +158,10 @@ export default function ServiceSection() {
           {/* Arrow button (left-center) */}
           <button
             onClick={() => goTo((activeIndex + 1) % serviceData.showcases.length)}
-            className="absolute left-6 md:left-12 lg:left-20 top-1/2 -translate-y-1/2 z-20 w-12 h-12 md:w-14 md:h-14 rounded-full border border-white/40 hover:bg-white/15 hover:border-white/70 flex items-center justify-center transition-all pointer-events-auto"
+            className="absolute left-6 md:left-12 lg:left-20 top-1/2 -translate-y-1/2 z-20 w-12 h-12 md:w-14 md:h-14 rounded-full border border-cloud-dancer/45 hover:bg-cloud-dancer/15 hover:border-golden-mist flex items-center justify-center transition-all pointer-events-auto"
             aria-label="다음 슬라이드"
           >
-            <ArrowRight className="w-5 h-5 text-white" />
+            <ArrowRight className="w-5 h-5 text-cloud-dancer" />
           </button>
 
           {/* TALL white card — occupies the right side from top to just above the nav.
@@ -176,31 +174,31 @@ export default function ServiceSection() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.6, ease }}
-                className="bg-white text-neutral-900 rounded-2xl p-7 md:p-9 lg:p-10 pb-7 md:pb-7 lg:pb-7 shadow-2xl h-full flex flex-col"
+                className="bg-cloud-dancer text-blue-fusion rounded-2xl border border-cloud-cover/35 p-7 md:p-9 lg:p-10 pb-7 md:pb-7 lg:pb-7 shadow-premium h-full flex flex-col"
               >
                 {/* Top spacer — pushes ALL content (number, title, heading, desc) to the bottom */}
                 <div className="flex-1" />
                 {/* Number — moved to just above heading */}
-                <p className="text-neutral-300 text-5xl md:text-6xl lg:text-7xl font-bold mb-3 leading-none">
+                <p className="text-cloud-cover/70 text-5xl md:text-6xl lg:text-7xl font-bold mb-3 leading-none">
                   {active.num}
                 </p>
                 {/* Korean title — moved to just above heading */}
-                <h3 className="copy-keep text-neutral-900 text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-6 md:mb-8">
+                <h3 className="copy-keep text-blue-fusion text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-6 md:mb-8">
                   {active.title}
                 </h3>
                 {/* Heading (bold subtitle) — slightly larger now */}
-                <p className="copy-keep text-neutral-900 text-xl md:text-2xl lg:text-3xl font-bold leading-snug mb-3">
+                <p className="copy-keep text-blue-fusion text-xl md:text-2xl lg:text-3xl font-bold leading-snug mb-3">
                   {active.heading}
                 </p>
                 {/* Description */}
-                <p className="copy-keep text-neutral-500 text-base md:text-lg leading-relaxed">
+                <p className="copy-keep text-hematite text-base md:text-lg leading-relaxed">
                   {active.desc}
                 </p>
               </motion.div>
             </AnimatePresence>
           </div>
 
-          <div className="absolute bottom-0 left-0 right-0 z-20 pointer-events-auto bg-gradient-to-t from-black/75 via-black/45 to-transparent px-6 pb-5 pt-14 md:px-12 md:pb-6 lg:px-20">
+          <div className="absolute bottom-0 left-0 right-0 z-20 pointer-events-auto bg-gradient-to-t from-black/72 via-black/38 to-transparent px-6 pb-5 pt-14 md:px-12 md:pb-6 lg:px-20">
             <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-5">
               {serviceData.showcases.map((item, i) => {
                 const isActive = i === activeIndex;
@@ -213,19 +211,19 @@ export default function ServiceSection() {
                     className="group min-w-0 text-left"
                     aria-current={isActive ? 'true' : undefined}
                   >
-                    <div className="mb-3 h-px w-full overflow-hidden bg-white/20">
+                    <div className="mb-3 h-px w-full overflow-hidden bg-cloud-dancer/25">
                       <motion.div
-                        className="h-full bg-white"
+                        className="h-full bg-golden-mist"
                         animate={{ width: isActive ? `${progress * 100}%` : '0%' }}
                         transition={{ duration: 0.12, ease: 'linear' }}
                       />
                     </div>
                     <div className="flex min-w-0 items-baseline gap-3">
-                      <span className={`text-xs font-semibold ${isActive ? 'text-white' : 'text-white/45'}`}>
+                      <span className={`text-xs font-semibold ${isActive ? 'text-golden-mist' : 'text-cloud-dancer/45'}`}>
                         {item.num}
                       </span>
                       <span className={`truncate text-sm font-medium transition-colors md:text-base ${
-                        isActive ? 'text-white' : 'text-white/55 group-hover:text-white/80'
+                        isActive ? 'text-cloud-dancer' : 'text-cloud-dancer/55 group-hover:text-cloud-dancer/80'
                       }`}>
                         {item.title}
                       </span>
@@ -243,7 +241,11 @@ export default function ServiceSection() {
              transition feels like "the photo grows into the fullscreen". Other cards fade. */}
         <motion.div
           style={{ opacity: cardsOpacity }}
+<<<<<<< HEAD
           className="absolute inset-0 z-30 pointer-events-none bg-[var(--color-page-bg)] flex items-center justify-center gap-2 px-6 md:gap-3 md:px-12 lg:gap-4 lg:px-20"
+=======
+          className="absolute inset-0 z-30 pointer-events-none bg-cloud-dancer flex items-center justify-center gap-2 px-6 md:gap-3 md:px-12 lg:gap-4 lg:px-20"
+>>>>>>> efbbb1c (han commit)
         >
           {serviceData.showcases.map((item, i) => {
             const isActive = i === activeIndex;
@@ -255,7 +257,7 @@ export default function ServiceSection() {
                   opacity: isActive ? 1 : inactiveCardOpacity,
                   zIndex: isActive ? 10 : 1,
                 }}
-                className="flex-1 max-w-[260px] md:max-w-[300px] lg:max-w-[340px] aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl"
+                className="flex-1 max-w-[260px] md:max-w-[300px] lg:max-w-[340px] aspect-[3/4] rounded-2xl overflow-hidden shadow-premium"
               >
                 <img
                   src={item.image}

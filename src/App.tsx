@@ -25,7 +25,11 @@ function App() {
   return (
     <BrowserRouter>
       <ScrollToTop />
+<<<<<<< HEAD
       <div className="min-h-screen bg-[var(--color-page-bg)]">
+=======
+      <div className="min-h-screen bg-cloud-dancer text-blue-fusion">
+>>>>>>> efbbb1c (han commit)
         <Header />
         <main>
           <Routes>

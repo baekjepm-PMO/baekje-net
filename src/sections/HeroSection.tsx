@@ -69,11 +69,7 @@ export default function HeroSection() {
             className="hero-single-frame"
             style={{ borderRadius, '--hero-single-alpha': singleOpacity } as MotionStyleVars}
           >
-            <motion.div
-              animate={{ scale: [1, 1.08, 1] }}
-              transition={{ duration: 18, ease: 'easeInOut', repeat: Infinity }}
-              className="hero-image-kenburns"
-            >
+            <motion.div className="hero-image-kenburns">
               <img src={heroData.image} alt="Hero" className="hero-image" />
             </motion.div>
             <div className="hero-image-shade" />
