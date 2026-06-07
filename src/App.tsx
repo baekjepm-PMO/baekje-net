@@ -11,6 +11,7 @@ import LogisticsService from './pages/LogisticsService';
 import Contact from './pages/Contact';
 import Talent from './pages/Talent';
 import CompliancePage from './pages/CompliancePage';
+import CeoMessage from './pages/CeoMessage';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -32,6 +33,7 @@ function App() {
             <Route path="/company/overview" element={<CompanyOverview />} />
             <Route path="/company/vision" element={<Vision />} />
             <Route path="/company/history" element={<History />} />
+            <Route path="/company/ceo-message" element={<CeoMessage />} />
             <Route path="/company/group" element={<GroupCompanies />} />
             <Route path="/logistics" element={<LogisticsService />} />
             <Route path="/compliance" element={<CompliancePage title="준법경영" />} />
