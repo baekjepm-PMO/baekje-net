@@ -9,8 +9,9 @@ const navItems = [
     path: '/company', 
     children: [
       { label: '회사 개요', path: '/company/overview' },
-      { label: '비전', path: '/company/vision' },
       { label: '연혁', path: '/company/history' },
+      { label: 'CEO 인사말', path: '/company/ceo-message' },
+      { label: '비전', path: '/company/vision' },
       { label: '그룹사 소개', path: '/company/group' },
     ],
   },
@@ -43,6 +44,10 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
   const location = useLocation();
+  const hasSolidHeader =
+    isScrolled ||
+    location.pathname === '/company/overview' ||
+    location.pathname === '/company/ceo-message';
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -58,7 +63,7 @@ export default function Header() {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${
-        isScrolled
+        hasSolidHeader
           ? 'bg-white/95 backdrop-blur-lg shadow-[0_1px_0_rgba(0,0,0,0.06)]'
           : 'bg-transparent'
       }`}
@@ -69,7 +74,7 @@ export default function Header() {
           <Link to="/" className="flex items-center">
             <span
               className={`text-xl font-bold tracking-tight transition-colors duration-700 ${
-                isScrolled ? 'text-neutral-900' : 'text-white'
+                hasSolidHeader ? 'text-neutral-900' : 'text-white'
               }`}
             >
               백제약품
@@ -96,12 +101,12 @@ export default function Header() {
                     }
                   }}
                   className={`px-3.5 py-1.5 text-[13px] font-medium transition-colors duration-300 rounded-lg ${
-                    isScrolled
+                    hasSolidHeader
                       ? 'text-neutral-600 hover:text-neutral-900'
                       : 'text-white/70 hover:text-white'
                   } ${
                     location.pathname.startsWith(item.path)
-                      ? isScrolled
+                      ? hasSolidHeader
                         ? 'text-neutral-900'
                         : 'text-white'
                       : ''
@@ -141,7 +146,7 @@ export default function Header() {
             {/* EN button */}
             <button
               className={`ml-3 px-3 py-1.5 text-[11px] font-semibold tracking-wider rounded-full border transition-all duration-300 ${
-                isScrolled
+                hasSolidHeader
                   ? 'border-neutral-200 text-neutral-500 hover:border-neutral-400 hover:text-neutral-900'
                   : 'border-white/20 text-white/50 hover:border-white/40 hover:text-white'
               }`}
@@ -156,9 +161,9 @@ export default function Header() {
             onClick={() => setMobileOpen(!mobileOpen)}
           >
             {mobileOpen ? (
-              <X className={isScrolled ? 'text-neutral-900' : 'text-white'} size={22} />
+              <X className={hasSolidHeader ? 'text-neutral-900' : 'text-white'} size={22} />
             ) : (
-              <Menu className={isScrolled ? 'text-neutral-900' : 'text-white'} size={22} />
+              <Menu className={hasSolidHeader ? 'text-neutral-900' : 'text-white'} size={22} />
             )}
           </button>
         </div>
