@@ -138,12 +138,12 @@ function TravelingDot({
       <g transform={`rotate(${angle})`}>
         <path
           d={flowMarkPath}
-          fill={PALETTE.balticSea}
+          fill={PALETTE.blueFusion}
           fillOpacity="0.18"
           transform="scale(1.16 1.22)"
         />
       {/* 중간 글로우 */}
-        <path d={flowMarkPath} fill={PALETTE.balticSea} />
+        <path d={flowMarkPath} fill={PALETTE.blueFusion} />
       </g>
       {/* 핵심 흰 점 */}
     </motion.g>
@@ -204,7 +204,7 @@ function KoreaExternalMap({
             <path
               key={location.id}
               d={location.path}
-              fill={PALETTE.veiledVista}
+              fill={PALETTE.balticSea}
               fillOpacity="0.5"
               stroke={PALETTE.blueFusion}
               strokeOpacity="0.58"
@@ -235,7 +235,7 @@ function KoreaExternalMap({
               y1={segment.from.y}
               x2={segment.to.x}
               y2={segment.to.y}
-              stroke={PALETTE.balticSea}
+              stroke={PALETTE.blueFusion}
               strokeWidth="1.4"
               strokeLinecap="round"
               vectorEffect="non-scaling-stroke"
@@ -312,7 +312,7 @@ function KoreaExternalMap({
               }
               style={{ transformOrigin: `${node.x}px ${node.y}px` }}
             >
-              <circle cx={node.x} cy={node.y} r="8.5" fill={PALETTE.balticSea} fillOpacity="0.16" />
+              <circle cx={node.x} cy={node.y} r="8.5" fill={PALETTE.blueFusion} fillOpacity="0.16" />
               <circle cx={node.x} cy={node.y} r="5.2" fill={PALETTE.cloudDancer} />
               <circle
                 cx={node.x}
@@ -324,7 +324,7 @@ function KoreaExternalMap({
                 strokeWidth="1.2"
                 vectorEffect="non-scaling-stroke"
               />
-              <circle cx={node.x} cy={node.y} r="2.7" fill={PALETTE.balticSea} />
+              <circle cx={node.x} cy={node.y} r="2.7" fill={PALETTE.blueFusion} />
             </motion.g>
           ))}
         </svg>
@@ -401,9 +401,9 @@ export default function NetworkSection() {
   const finalMapScale = useTransform(sceneProgress, [CONTENT_REVEAL_START, CONTENT_REVEAL_END], [0.985, 1]);
 
   return (
-    <div id="network" ref={containerRef} className="relative bg-blue-fusion text-cloud-dancer" style={{ height: '340vh' }}>
+    <div id="network" ref={containerRef} className="relative bg-[var(--color-stretch-limo)] text-cloud-dancer" style={{ height: '340vh' }}>
       <div className="sticky top-0 h-screen overflow-hidden">
-        <div className="absolute inset-0 bg-blue-fusion" />
+        <div className="absolute inset-0 bg-[var(--color-stretch-limo)]" />
 
         <motion.div
           aria-hidden={!contentRevealed}
@@ -415,7 +415,7 @@ export default function NetworkSection() {
           <div className="mx-auto w-full max-w-[1440px] px-6 md:px-12 lg:px-20 xl:px-32">
             <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-16">
               <motion.div style={{ y: contentY }} className="flex flex-col justify-center">
-                <p className="mb-6 text-[15px] font-extrabold uppercase tracking-[0.2em] text-golden-mist">
+                <p className="main-section-kicker--network mb-6 text-[15px] font-extrabold uppercase tracking-[0.2em]">
                   {networkData.label}
                 </p>
 
@@ -450,7 +450,7 @@ export default function NetworkSection() {
 
         <motion.div
           style={{ opacity: curtainOpacity }}
-          className="absolute inset-0 z-20 bg-blue-fusion pointer-events-none"
+          className="absolute inset-0 z-20 bg-[var(--color-stretch-limo)] pointer-events-none"
         />
 
         <motion.div
