@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { motion, useScroll, useTransform, type MotionStyle, type MotionValue } from 'framer-motion';
+import { motion, useScroll, useSpring, useTransform, type MotionStyle, type MotionValue } from 'framer-motion';
 import { heroData } from '../data/mainPage';
 
 const ease = [0.25, 0.1, 0.25, 1] as const;
@@ -9,19 +9,19 @@ const heroStats = [
   {
     value: '1946',
     label: '설립년도',
-    toneClass: 'hero-piece-back--light',
+    toneClass: 'hero-piece-back--regatta',
     icon: '↗',
   },
   {
     value: '1,300',
     label: '임직원수',
-    toneClass: 'hero-piece-back--blue',
+    toneClass: 'hero-piece-back--rivulet',
     icon: '○○○',
   },
   {
     value: '서울 구로구',
     label: '본사 위치',
-    toneClass: 'hero-piece-back--dark',
+    toneClass: 'hero-piece-back--citron',
     icon: '⌁',
   },
 ] as const;
@@ -32,23 +32,48 @@ export default function HeroSection() {
     target: containerRef,
     offset: ['start start', 'end start'],
   });
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 120,
+    damping: 34,
+    mass: 0.22,
+    restDelta: 0.0001,
+  });
 
-  const frameScale = useTransform(scrollYProgress, [0, 0.06, 0.09], [1, 0.68, 0.58]);
-  const borderRadius = useTransform(scrollYProgress, [0, 0.055, 0.085], [0, 8, 3]);
-  const textOpacity = useTransform(scrollYProgress, [0, 0.025, 0.045], [1, 0.18, 0]);
-  const textY = useTransform(scrollYProgress, [0, 0.08], [0, -72]);
-  const singleOpacity = useTransform(scrollYProgress, [0, 0.13, 0.18], [1, 1, 0]);
-  const splitOpacity = useTransform(scrollYProgress, [0.115, 0.165], [0, 1]);
-  const leftX = useTransform(scrollYProgress, [0.16, 0.22], [0, -84]);
-  const centerX = useTransform(scrollYProgress, [0.16, 0.22], [0, 0]);
-  const rightX = useTransform(scrollYProgress, [0.16, 0.22], [0, 84]);
+<<<<<<< HEAD
+  const frameScale = useTransform(smoothProgress, [0, 0.07, 0.115], [1, 0.7, 0.58]);
+  const borderRadius = useTransform(smoothProgress, [0, 0.065, 0.105], [0, 8, 3]);
+  const textOpacity = useTransform(smoothProgress, [0, 0.04, 0.07], [1, 0.18, 0]);
+  const textY = useTransform(smoothProgress, [0, 0.105], [0, -72]);
+  const singleOpacity = useTransform(smoothProgress, [0, 0.14, 0.21], [1, 1, 0]);
+  const splitOpacity = useTransform(smoothProgress, [0.14, 0.25], [0, 1]);
+  const leftX = useTransform(smoothProgress, [0.235, 0.34], [0, -84]);
+  const centerX = useTransform(smoothProgress, [0.235, 0.34], [0, 0]);
+  const rightX = useTransform(smoothProgress, [0.235, 0.34], [0, 84]);
+  const leftTilt = useTransform(smoothProgress, [0, 1], [0, 0]);
+  const centerTilt = useTransform(smoothProgress, [0, 1], [0, 0]);
+  const rightTilt = useTransform(smoothProgress, [0, 1], [0, 0]);
+  const leftFlip = useTransform(smoothProgress, [0.335, 0.47], [0, 180]);
+  const centerFlip = useTransform(smoothProgress, [0.32, 0.455], [0, 180]);
+  const rightFlip = useTransform(smoothProgress, [0.35, 0.485], [0, 180]);
+  const scrollIndicatorOpacity = useTransform(smoothProgress, [0, 0.08], [1, 0]);
+=======
+  const frameScale = useTransform(scrollYProgress, [0, 0.1, 0.15], [1, 0.68, 0.58]);
+  const borderRadius = useTransform(scrollYProgress, [0, 0.095, 0.145], [0, 8, 3]);
+  const textOpacity = useTransform(scrollYProgress, [0, 0.045, 0.075], [1, 0.18, 0]);
+  const textY = useTransform(scrollYProgress, [0, 0.13], [0, -72]);
+  const singleOpacity = useTransform(scrollYProgress, [0, 0.2, 0.28], [1, 1, 0]);
+  const splitOpacity = useTransform(scrollYProgress, [0.19, 0.27], [0, 1]);
+  const leftX = useTransform(scrollYProgress, [0.26, 0.36], [0, -84]);
+  const centerX = useTransform(scrollYProgress, [0.26, 0.36], [0, 0]);
+  const rightX = useTransform(scrollYProgress, [0.26, 0.36], [0, 84]);
   const leftTilt = useTransform(scrollYProgress, [0, 1], [0, 0]);
   const centerTilt = useTransform(scrollYProgress, [0, 1], [0, 0]);
   const rightTilt = useTransform(scrollYProgress, [0, 1], [0, 0]);
-  const leftFlip = useTransform(scrollYProgress, [0.23, 0.32], [0, 180]);
-  const centerFlip = useTransform(scrollYProgress, [0.225, 0.315], [0, 180]);
-  const rightFlip = useTransform(scrollYProgress, [0.235, 0.325], [0, 180]);
-  const scrollIndicatorOpacity = useTransform(scrollYProgress, [0, 0.06], [1, 0]);
+  const leftFlip = useTransform(scrollYProgress, [0.38, 0.52], [0, 180]);
+  const centerFlip = useTransform(scrollYProgress, [0.37, 0.51], [0, 180]);
+  const rightFlip = useTransform(scrollYProgress, [0.39, 0.53], [0, 180]);
+  const scrollIndicatorOpacity = useTransform(scrollYProgress, [0, 0.1], [1, 0]);
+>>>>>>> bca57a6 (git coomit)
   const pieceMotion = [
     { x: leftX, rotateZ: leftTilt, rotateY: leftFlip, backgroundPosition: '0% 50%' },
     { x: centerX, rotateZ: centerTilt, rotateY: centerFlip, backgroundPosition: '50% 50%' },
@@ -63,11 +88,7 @@ export default function HeroSection() {
             className="hero-single-frame"
             style={{ borderRadius, '--hero-single-alpha': singleOpacity } as MotionStyleVars}
           >
-            <motion.div
-              animate={{ scale: [1, 1.08, 1] }}
-              transition={{ duration: 18, ease: 'easeInOut', repeat: Infinity }}
-              className="hero-image-kenburns"
-            >
+            <motion.div className="hero-image-kenburns">
               <img src={heroData.image} alt="Hero" className="hero-image" />
             </motion.div>
             <div className="hero-image-shade" />
@@ -98,7 +119,6 @@ export default function HeroSection() {
                     <div className="hero-piece-shade" />
                   </div>
                   <div className={`hero-piece-face hero-piece-back ${stat.toneClass}`}>
-                    <span className="hero-piece-icon">{stat.icon}</span>
                     <div>
                       <strong>{stat.value}</strong>
                       <span className="hero-piece-label">{stat.label}</span>
@@ -109,6 +129,13 @@ export default function HeroSection() {
             ))}
           </motion.div>
         </motion.div>
+
+        <motion.p
+          className="hero-about-kicker"
+          style={{ '--hero-about-alpha': splitOpacity } as MotionStyleVars}
+        >
+          About
+        </motion.p>
 
         <motion.div
           style={{ y: textY, '--hero-copy-alpha': textOpacity } as MotionStyleVars}

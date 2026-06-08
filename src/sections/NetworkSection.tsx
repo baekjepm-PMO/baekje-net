@@ -16,8 +16,26 @@ const KOREA_MAP_VIEW_BOX = '-40 -42 604 715';
 const GLOBE_AUTO_PLAY_START = 0.08;
 const GLOBE_AUTO_PLAY_END = 0.67;
 const GLOBE_AUTO_PLAY_DURATION = 3.0;
-const CONTENT_REVEAL_START = 0.37;
-const CONTENT_REVEAL_END = 0.45;
+const CONTENT_REVEAL_START = 0.29;
+const CONTENT_REVEAL_END = 0.36;
+const PALETTE = {
+<<<<<<< HEAD
+  cloudDancer: '#F0EFEB',
+  cloudDancerDeep: '#E4E3DF',
+  stretchLimo: '#2B2C30',
+  aquaGray: '#A5B2AA',
+  regatta: '#497AB7',
+  regattaDark: '#304868',
+=======
+  cloudDancer: 'var(--color-cloud-dancer)',
+  veiledVista: 'var(--color-veiled-vista)',
+  balticSea: 'var(--color-baltic-sea)',
+  goldenMist: 'var(--color-golden-mist)',
+  cloudCover: 'var(--color-cloud-cover)',
+  hematite: 'var(--color-hematite)',
+  blueFusion: 'var(--color-blue-fusion)',
+>>>>>>> efbbb1c (han commit)
+};
 const NETWORK_TITLE_LINES = ['대한민국 헬스케어를', '연결하는 유통 네트워크'];
 const NETWORK_NODE_POOL = [
   { x: 141, y: 135 },
@@ -57,11 +75,11 @@ function pickKoreaNodes(count: number) {
 
 function KoreaMapGrid({ id }: { id: string }) {
   return (
-    <div className="absolute inset-0 opacity-10">
+    <div className="absolute inset-0 opacity-20">
       <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <pattern id={id} width="40" height="40" patternUnits="userSpaceOnUse">
-            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" strokeWidth="0.5" />
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke={PALETTE.cloudCover} strokeWidth="0.5" />
           </pattern>
         </defs>
         <rect width="100%" height="100%" fill={`url(#${id})`} />
@@ -87,6 +105,19 @@ function TravelingDot({
 }) {
   const distance = Math.hypot(to.x - from.x, to.y - from.y);
   const duration = distance / speed;
+  const angle = (Math.atan2(to.y - from.y, to.x - from.x) * 180) / Math.PI;
+  const rearLength = size * 4.65;
+  const frontLength = size * 3.9;
+  const coreWidth = size * 1.05;
+  const markHeight = size * 1.38;
+  const flowMarkPath = [
+    `M ${-rearLength} 0`,
+    `C ${-coreWidth * 1.9} ${-markHeight * 0.2}, ${-coreWidth * 0.95} ${-markHeight}, 0 ${-markHeight}`,
+    `C ${coreWidth * 0.95} ${-markHeight}, ${coreWidth * 1.9} ${-markHeight * 0.2}, ${frontLength} 0`,
+    `C ${coreWidth * 1.9} ${markHeight * 0.2}, ${coreWidth * 0.95} ${markHeight}, 0 ${markHeight}`,
+    `C ${-coreWidth * 0.95} ${markHeight}, ${-coreWidth * 1.9} ${markHeight * 0.2}, ${-rearLength} 0`,
+    'Z',
+  ].join(' ');
 
   return (
     <motion.g
@@ -113,17 +144,17 @@ function TravelingDot({
       }
     >
       {/* 넓은 글로우 헤일로 */}
-      <circle r={size * 3.2} fill="#5580ff" fillOpacity="0.22" />
+      <g transform={`rotate(${angle})`}>
+        <path
+          d={flowMarkPath}
+          fill={PALETTE.balticSea}
+          fillOpacity="0.18"
+          transform="scale(1.16 1.22)"
+        />
       {/* 중간 글로우 */}
-      <circle r={size * 1.9} fill="#7aa2ff" fillOpacity="0.55" />
+        <path d={flowMarkPath} fill={PALETTE.balticSea} />
+      </g>
       {/* 핵심 흰 점 */}
-      <circle
-        r={size}
-        fill="#ffffff"
-        style={{
-          filter: `drop-shadow(0 0 ${size + 3}px #ffffff) drop-shadow(0 0 ${size * 3}px #7aa2ff) drop-shadow(0 0 ${size * 5}px #3a6aff)`,
-        }}
-      />
     </motion.g>
   );
 }
@@ -154,14 +185,13 @@ function KoreaExternalMap({
   return (
     <div className={className}>
       <div className="relative h-full w-full">
-        {glow && <div className="absolute inset-[10%] rounded-full bg-blue-500/10 blur-3xl" />}
+        {glow && <div className="absolute inset-[10%] rounded-full bg-baltic-sea/10 blur-3xl" />}
         <svg
           aria-hidden="true"
-          className="absolute inset-0 h-full w-full opacity-90"
+          className="absolute inset-0 h-full w-full opacity-95"
           viewBox={KOREA_MAP_VIEW_BOX}
           preserveAspectRatio="xMidYMid meet"
           style={{
-            filter: 'drop-shadow(0 0 16px rgba(59, 130, 246, 0.18))',
             overflow: 'hidden',
           }}
           xmlns="http://www.w3.org/2000/svg"
@@ -171,9 +201,9 @@ function KoreaExternalMap({
               key={`shadow-${location.id}`}
               d={location.path}
               fill="none"
-              stroke="#071225"
-              strokeOpacity="0.88"
-              strokeWidth="3.1"
+              stroke={PALETTE.cloudDancer}
+              strokeOpacity="0.82"
+              strokeWidth="3"
               strokeLinecap="round"
               strokeLinejoin="round"
               vectorEffect="non-scaling-stroke"
@@ -183,10 +213,10 @@ function KoreaExternalMap({
             <path
               key={location.id}
               d={location.path}
-              fill="#08142d"
-              fillOpacity="0.16"
-              stroke="#294c96"
-              strokeOpacity="0.92"
+              fill={PALETTE.veiledVista}
+              fillOpacity="0.5"
+              stroke={PALETTE.blueFusion}
+              strokeOpacity="0.58"
               strokeWidth="1.3"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -198,8 +228,8 @@ function KoreaExternalMap({
               key={`highlight-${location.id}`}
               d={location.path}
               fill="none"
-              stroke="#9fb5ff"
-              strokeOpacity="0.22"
+              stroke={PALETTE.cloudDancer}
+              strokeOpacity="0.5"
               strokeWidth="0.48"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -214,7 +244,7 @@ function KoreaExternalMap({
               y1={segment.from.y}
               x2={segment.to.x}
               y2={segment.to.y}
-              stroke="#7aa2ff"
+              stroke={PALETTE.balticSea}
               strokeWidth="1.4"
               strokeLinecap="round"
               vectorEffect="non-scaling-stroke"
@@ -277,28 +307,33 @@ function KoreaExternalMap({
               initial={{ opacity: 0, scale: 0.5 }}
               animate={
                 active
-                  ? { opacity: [0.45, 0.85, 0.45], scale: 1 }
+                  ? { opacity: 1, scale: 1 }
                   : { opacity: 0, scale: 0.5 }
               }
               transition={
                 active
                   ? {
-                      scale: { duration: 0.34, delay: index * 0.14, ease },
-                      opacity: {
-                        duration: 3.2 + (index % 3) * 0.5,
-                        delay: index * 0.3,
-                        repeat: Infinity,
-                        ease: 'easeInOut',
-                      },
+                      duration: 0.34,
+                      delay: index * 0.14,
+                      ease,
                     }
                   : {}
               }
               style={{ transformOrigin: `${node.x}px ${node.y}px` }}
             >
-              <circle cx={node.x} cy={node.y} r="9" fill="#6b8fff" fillOpacity="0.12" />
-              <circle cx={node.x} cy={node.y} r="5.5" fill="#6b8fff" fillOpacity="0.18" />
-              <circle cx={node.x} cy={node.y} r="3.9" fill="#dbe7ff" />
-              <circle cx={node.x} cy={node.y} r="2.2" fill="#315fd4" />
+              <circle cx={node.x} cy={node.y} r="8.5" fill={PALETTE.balticSea} fillOpacity="0.16" />
+              <circle cx={node.x} cy={node.y} r="5.2" fill={PALETTE.cloudDancer} />
+              <circle
+                cx={node.x}
+                cy={node.y}
+                r="4.2"
+                fill="none"
+                stroke={PALETTE.blueFusion}
+                strokeOpacity="0.78"
+                strokeWidth="1.2"
+                vectorEffect="non-scaling-stroke"
+              />
+              <circle cx={node.x} cy={node.y} r="2.7" fill={PALETTE.balticSea} />
             </motion.g>
           ))}
         </svg>
@@ -365,8 +400,8 @@ export default function NetworkSection() {
   });
 
   const curtainOpacity = useTransform(sceneProgress, [0, CONTENT_REVEAL_START - 0.03, CONTENT_REVEAL_END], [1, 1, 0]);
-  const globeY = useTransform(sceneProgress, [0, 0.16, 0.28], ['112vh', '32vh', '0vh']);
-  const globeScale = useTransform(sceneProgress, [0, 0.16, 0.28], [0.28, 0.68, 1]);
+  const globeY = useTransform(sceneProgress, [0, 0.075, 0.16], ['112vh', '12vh', '-4vh']);
+  const globeScale = useTransform(sceneProgress, [0, 0.075, 0.16], [0.48, 1.25, 1.68]);
   const globeOpacity = useTransform(sceneProgress, [0, 0.04, 1], [0, 1, 1]);
 
   const layoutY = useTransform(sceneProgress, [CONTENT_REVEAL_START, CONTENT_REVEAL_END], [28, 0]);
@@ -375,9 +410,9 @@ export default function NetworkSection() {
   const finalMapScale = useTransform(sceneProgress, [CONTENT_REVEAL_START, CONTENT_REVEAL_END], [0.985, 1]);
 
   return (
-    <div id="network" ref={containerRef} className="relative bg-black text-white" style={{ height: '260vh' }}>
+    <div id="network" ref={containerRef} className="relative bg-blue-fusion text-cloud-dancer" style={{ height: '340vh' }}>
       <div className="sticky top-0 h-screen overflow-hidden">
-        <div className="absolute inset-0 bg-black" />
+        <div className="absolute inset-0 bg-blue-fusion" />
 
         <motion.div
           aria-hidden={!contentRevealed}
@@ -389,7 +424,7 @@ export default function NetworkSection() {
           <div className="mx-auto w-full max-w-[1440px] px-6 md:px-12 lg:px-20 xl:px-32">
             <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-16">
               <motion.div style={{ y: contentY }} className="flex flex-col justify-center">
-                <p className="mb-6 text-xs font-semibold uppercase tracking-[0.2em] text-primary-400">
+                <p className="mb-6 text-[15px] font-extrabold uppercase tracking-[0.2em] text-golden-mist">
                   {networkData.label}
                 </p>
 
@@ -401,16 +436,15 @@ export default function NetworkSection() {
                   ))}
                 </h2>
 
-                <p className="text-lg font-light text-white/50">
+                <p className="text-lg font-light text-cloud-dancer/70">
                   {networkData.subtitle}
                 </p>
               </motion.div>
 
               <motion.div
                 style={{ y: finalMapY, scale: finalMapScale }}
-                className="relative h-[380px] overflow-hidden rounded-[8px] bg-neutral-950/90 md:h-[460px] lg:h-[520px]"
+                className="relative h-[380px] overflow-hidden rounded-[8px] border border-cloud-dancer/20 bg-cloud-dancer shadow-premium md:h-[460px] lg:h-[520px]"
               >
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_58%_42%,rgba(37,99,235,0.18),transparent_45%),linear-gradient(115deg,rgba(30,64,175,0.12),rgba(10,10,10,0)_48%)]" />
                 <KoreaMapGrid id="networkFinalGrid" />
                 <KoreaExternalMap
                   className="absolute inset-[2%] z-10"
@@ -425,7 +459,7 @@ export default function NetworkSection() {
 
         <motion.div
           style={{ opacity: curtainOpacity }}
-          className="absolute inset-0 z-20 bg-black pointer-events-none"
+          className="absolute inset-0 z-20 bg-blue-fusion pointer-events-none"
         />
 
         <motion.div

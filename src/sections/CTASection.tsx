@@ -10,7 +10,11 @@ export default function CTASection() {
   const isInView = useInView(ref, { once: true, margin: '-80px' });
 
   return (
-    <section ref={ref} className="bg-white py-10 md:py-14">
+<<<<<<< HEAD
+    <section ref={ref} className="bg-[var(--color-page-bg)] py-10 md:py-14">
+=======
+    <section ref={ref} className="bg-cloud-dancer py-10 md:py-14">
+>>>>>>> efbbb1c (han commit)
       <div className="max-w-[1440px] mx-auto px-6 md:px-12 lg:px-20 xl:px-32">
         <div className="flex flex-col md:flex-row gap-4 justify-center max-w-2xl mx-auto">
           {ctaData.buttons.map((btn, i) => (
@@ -20,10 +24,10 @@ export default function CTASection() {
               initial={{ opacity: 0, y: 30 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.8, delay: 0.2 + i * 0.12, ease }}
-              className="flex items-center justify-between px-7 md:px-8 py-5 rounded-lg border border-neutral-200 hover:bg-neutral-900 hover:border-neutral-900 text-neutral-900 hover:text-white transition-all duration-300 group"
+              className={`palette-cta-button ${i === 0 ? 'palette-cta-button--primary' : 'palette-cta-button--secondary'}`}
             >
               <div>
-                <p className="text-xs text-neutral-400 group-hover:text-white/50 mb-1 transition-colors duration-300">
+                <p className="palette-cta-button-sub">
                   {btn.sub}
                 </p>
                 <p className="text-base font-semibold">{btn.label}</p>

@@ -7,11 +7,15 @@ import CompanyOverview from './pages/CompanyOverview';
 import Vision from './pages/Vision';
 import History from './pages/History';
 import GroupCompanies from './pages/GroupCompanies';
-import NationalNetwork from './pages/NationalNetwork';
 import LogisticsService from './pages/LogisticsService';
 import Contact from './pages/Contact';
 import Talent from './pages/Talent';
 import CompliancePage from './pages/CompliancePage';
+<<<<<<< HEAD
+import CeoMessage from './pages/CeoMessage';
+=======
+import { getPaletteIdFromPath } from './theme/palettes';
+>>>>>>> bca57a6 (git coomit)
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -21,20 +25,36 @@ function ScrollToTop() {
   return null;
 }
 
-function App() {
+function AppShell() {
+  const location = useLocation();
+  const paletteId = getPaletteIdFromPath(location.pathname);
+
+  useEffect(() => {
+    document.documentElement.dataset.palette = paletteId;
+  }, [paletteId]);
+
   return (
-    <BrowserRouter>
+    <>
       <ScrollToTop />
-      <div className="min-h-screen bg-white">
+<<<<<<< HEAD
+<<<<<<< HEAD
+      <div className="min-h-screen bg-[var(--color-page-bg)]">
+=======
+      <div className="min-h-screen bg-cloud-dancer text-blue-fusion">
+>>>>>>> efbbb1c (han commit)
+=======
+      <div data-palette={paletteId} className="min-h-screen bg-cloud-dancer text-blue-fusion">
+>>>>>>> bca57a6 (git coomit)
         <Header />
         <main>
           <Routes>
             <Route path="/" element={<MainPage />} />
+            <Route path="/palette/:paletteId" element={<MainPage />} />
             <Route path="/company/overview" element={<CompanyOverview />} />
             <Route path="/company/vision" element={<Vision />} />
             <Route path="/company/history" element={<History />} />
+            <Route path="/company/ceo-message" element={<CeoMessage />} />
             <Route path="/company/group" element={<GroupCompanies />} />
-            <Route path="/company/network" element={<NationalNetwork />} />
             <Route path="/logistics" element={<LogisticsService />} />
             <Route path="/compliance" element={<CompliancePage title="준법경영" />} />
             <Route path="/compliance/ceo-message" element={<CompliancePage title="CEO 메시지" />} />
@@ -47,6 +67,14 @@ function App() {
         </main>
         <Footer />
       </div>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AppShell />
     </BrowserRouter>
   );
 }
