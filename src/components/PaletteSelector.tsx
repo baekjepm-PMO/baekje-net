@@ -8,7 +8,7 @@ const previewTheme = {
     nav: '#53687C',
     buttonBg: '#53687C',
     buttonText: '#F1F0EC',
-    accent: '#D7CF92',
+    accent: '#53687C',
     cardAccent: '#AA95B0',
     footer: '#53687C',
   },

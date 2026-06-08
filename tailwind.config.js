@@ -106,7 +106,7 @@ export default {
     extend: {
       colors: {
         white: colorVar('cloud-dancer'),
-        black: colorVar('blue-fusion'),
+        black: colorVar('text-black'),
         cloud: cloudScale,
         neutral: neutralScale,
         primary: semanticScale,

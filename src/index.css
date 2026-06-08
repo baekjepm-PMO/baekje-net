@@ -35,8 +35,8 @@
     --color-regatta: var(--color-blue-fusion);
     --color-rinsing-rivulet: var(--color-baltic-sea);
     --color-dusky-citron: var(--color-golden-mist);
-    --color-stretch-limo: var(--color-blue-fusion);
-    --color-text-black: var(--color-blue-fusion);
+    --color-stretch-limo: #2B2C30;
+    --color-text-black: #000000;
     --rgb-cloud-dancer: 241 240 236;
     --rgb-veiled-vista: 203 232 206;
     --rgb-baltic-sea: 123 183 219;
@@ -45,13 +45,34 @@
     --rgb-cloud-cover: 155 150 151;
     --rgb-hematite: 120 116 112;
     --rgb-blue-fusion: 83 104 124;
+    --rgb-text-black: 0 0 0;
     --rgb-primary: 83 104 124;
     --rgb-secondary: 123 183 219;
     --rgb-aqua-gray: var(--rgb-cloud-cover);
     --rgb-regatta: var(--rgb-blue-fusion);
     --rgb-rinsing-rivulet: var(--rgb-baltic-sea);
     --rgb-dusky-citron: var(--rgb-golden-mist);
-    --rgb-stretch-limo: var(--rgb-blue-fusion);
+    --rgb-stretch-limo: 43 44 48;
+    --color-about-card-one-bg: var(--color-cloud-cover);
+    --color-about-card-one-text: var(--color-cloud-dancer);
+    --color-about-card-two-bg: var(--color-hematite);
+    --color-about-card-two-text: var(--color-cloud-dancer);
+    --color-about-card-three-bg: var(--color-quiet-violet);
+    --color-about-card-three-text: var(--color-cloud-dancer);
+    --color-strength-box-one: var(--color-veiled-vista);
+    --color-strength-box-two: var(--color-baltic-sea);
+    --color-strength-box-three: var(--color-blue-fusion);
+    --rgb-strength-box-one: var(--rgb-veiled-vista);
+    --rgb-strength-box-two: var(--rgb-baltic-sea);
+    --rgb-strength-box-three: var(--rgb-blue-fusion);
+    --color-about-label: var(--color-veiled-vista);
+    --color-strength-label: var(--color-baltic-sea);
+    --color-service-label: var(--color-quiet-violet);
+    --color-network-label: var(--color-golden-mist);
+    --color-service-progress: var(--color-blue-fusion);
+    --color-hero-eyebrow-dot: var(--color-cloud-cover);
+    --rgb-hero-eyebrow-dot: var(--rgb-cloud-cover);
+    --color-hero-title-accent: var(--color-text-black);
   }
 
   [data-palette='fresh-healthcare'] {
@@ -63,6 +84,7 @@
     --color-regatta: #557DB8;
     --color-rinsing-rivulet: #5DCBC8;
     --color-dusty-citron: #E3CD80;
+    --color-dusky-citron: var(--color-dusty-citron);
     --color-text-main-derived: #27384F;
     --color-text-muted-derived: #5F6F7D;
     --color-veiled-vista: var(--color-nantucket-breeze);
@@ -88,8 +110,8 @@
     --color-button-primary-bg: #F1F0EC;
     --color-button-primary-text: #27384F;
     --color-button-primary-hover: #BCD6EB;
-    --color-stretch-limo: var(--color-text-main-derived);
-    --color-text-black: var(--color-text-main-derived);
+    --color-stretch-limo: #2B2C30;
+    --color-text-black: #000000;
     --rgb-nantucket-breeze: 188 214 235;
     --rgb-cloud-dancer: 241 240 236;
     --rgb-alaskan-blue: 111 170 212;
@@ -105,10 +127,31 @@
     --rgb-cloud-cover: var(--rgb-aqua-gray);
     --rgb-hematite: 95 111 125;
     --rgb-blue-fusion: 39 56 79;
+    --rgb-text-black: 0 0 0;
     --rgb-primary: var(--rgb-regatta);
     --rgb-secondary: var(--rgb-alaskan-blue);
     --rgb-dusky-citron: var(--rgb-dusty-citron);
-    --rgb-stretch-limo: var(--rgb-blue-fusion);
+    --rgb-stretch-limo: 43 44 48;
+    --color-about-card-one-bg: var(--color-nantucket-breeze);
+    --color-about-card-one-text: var(--color-text-black);
+    --color-about-card-two-bg: var(--color-regatta);
+    --color-about-card-two-text: var(--color-cloud-dancer);
+    --color-about-card-three-bg: var(--color-alaskan-blue);
+    --color-about-card-three-text: var(--color-text-black);
+    --color-strength-box-one: var(--color-cosmic-sky);
+    --color-strength-box-two: var(--color-rinsing-rivulet);
+    --color-strength-box-three: var(--color-dusky-citron);
+    --rgb-strength-box-one: var(--rgb-cosmic-sky);
+    --rgb-strength-box-two: var(--rgb-rinsing-rivulet);
+    --rgb-strength-box-three: var(--rgb-dusky-citron);
+    --color-about-label: var(--color-cosmic-sky);
+    --color-strength-label: var(--color-regatta);
+    --color-service-label: var(--color-rinsing-rivulet);
+    --color-network-label: var(--color-dusky-citron);
+    --color-service-progress: var(--color-alaskan-blue);
+    --color-hero-eyebrow-dot: var(--color-quiet-violet);
+    --rgb-hero-eyebrow-dot: var(--rgb-quiet-violet);
+    --color-hero-title-accent: var(--color-golden-mist);
   }
 
   html {
@@ -157,7 +200,7 @@
     background:
       radial-gradient(circle at 18% 10%, rgb(var(--rgb-golden-mist) / 0.18), transparent 30%),
       linear-gradient(180deg, var(--color-cloud-dancer), rgb(var(--rgb-veiled-vista) / 0.34));
-    color: var(--color-blue-fusion);
+    color: var(--color-text-black);
     display: flex;
     align-items: center;
     min-height: 100vh;
@@ -188,7 +231,7 @@
 
   .palette-selector-heading h2 {
     margin: 0;
-    color: var(--color-blue-fusion);
+    color: var(--color-text-black);
     font-size: clamp(34px, 4vw, 68px);
     font-weight: 900;
     line-height: 1.1;
@@ -210,7 +253,7 @@
     background:
       linear-gradient(135deg, rgb(var(--rgb-cloud-dancer) / 0.96), rgb(var(--rgb-veiled-vista) / 0.3)),
       var(--color-cloud-dancer);
-    color: var(--color-blue-fusion);
+    color: var(--color-text-black);
     box-shadow: 0 18px 44px rgb(var(--rgb-blue-fusion) / 0.08);
     text-decoration: none;
     transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
@@ -237,7 +280,7 @@
   }
 
   .palette-selector-number {
-    color: var(--color-hematite);
+    color: var(--color-text-black);
     font-size: 12px;
     font-weight: 900;
     letter-spacing: 0.18em;
@@ -247,7 +290,7 @@
     border: 1px solid rgb(var(--rgb-blue-fusion) / 0.18);
     border-radius: 999px;
     padding: 6px 10px;
-    color: var(--color-hematite);
+    color: var(--color-text-black);
     background: rgb(var(--rgb-cloud-dancer) / 0.72);
     font-size: 12px;
     font-weight: 900;
@@ -261,7 +304,7 @@
 
   .palette-selector-name {
     margin-top: 20px;
-    color: var(--color-blue-fusion);
+    color: var(--color-text-black);
     font-size: clamp(24px, 2.4vw, 36px);
     font-weight: 900;
     line-height: 1.1;
@@ -270,7 +313,7 @@
   .palette-selector-description {
     max-width: 520px;
     margin-top: 12px;
-    color: var(--color-hematite);
+    color: var(--color-text-black);
     font-size: 15px;
     font-weight: 600;
     line-height: 1.7;
@@ -432,7 +475,7 @@
     border: 1px solid var(--color-primary);
     border-radius: 8px;
     padding: 20px 28px;
-    color: var(--color-blue-fusion);
+    color: var(--color-text-black);
     background: var(--color-cloud-dancer);
     box-shadow: 0 12px 34px rgb(var(--rgb-blue-fusion) / 0.1);
     transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease, transform 180ms ease;
@@ -448,7 +491,7 @@
   }
 
   .palette-cta-button--primary:hover {
-    color: var(--color-blue-fusion);
+    color: var(--color-text-black);
     border-color: var(--color-button-primary-hover);
     background: var(--color-button-primary-hover);
   }
@@ -586,22 +629,34 @@
     transform: rotateY(180deg);
   }
 
-  .hero-piece-back--light,
-  .hero-piece-back--regatta {
+  .hero-piece-back--light {
     color: var(--color-cloud-dancer);
     background: var(--color-blue-fusion);
   }
 
-  .hero-piece-back--blue,
-  .hero-piece-back--rivulet {
-    color: var(--color-blue-fusion);
+  .hero-piece-back--regatta {
+    color: var(--color-about-card-one-text);
+    background: var(--color-about-card-one-bg);
+  }
+
+  .hero-piece-back--blue {
+    color: var(--color-text-black);
     background: var(--color-veiled-vista);
   }
 
-  .hero-piece-back--dark,
-  .hero-piece-back--citron {
-    color: var(--color-blue-fusion);
+  .hero-piece-back--rivulet {
+    color: var(--color-about-card-two-text);
+    background: var(--color-about-card-two-bg);
+  }
+
+  .hero-piece-back--dark {
+    color: var(--color-text-black);
     background: var(--color-golden-mist);
+  }
+
+  .hero-piece-back--citron {
+    color: var(--color-about-card-three-text);
+    background: var(--color-about-card-three-bg);
   }
 
   .hero-about-kicker {
@@ -614,7 +669,7 @@
     max-width: 1440px;
     margin: 0 auto;
     padding: 0 24px;
-    color: var(--color-cloud-cover);
+    color: var(--color-about-label);
     font-size: 15px;
     font-weight: 900;
     line-height: 1.3;
@@ -626,6 +681,26 @@
 
   .hero-piece-back > div {
     display: contents;
+  }
+
+  .main-section-kicker--strength {
+    color: var(--color-strength-label);
+  }
+
+  .main-section-kicker--service {
+    color: var(--color-service-label);
+  }
+
+  .main-section-kicker--network {
+    color: var(--color-network-label);
+  }
+
+  .service-showcase-progress {
+    background: var(--color-service-progress);
+  }
+
+  .service-showcase-number.is-active {
+    color: var(--color-service-progress);
   }
 
   .hero-piece-back strong {
@@ -689,8 +764,8 @@
     width: 12px;
     height: 12px;
     border-radius: 999px;
-    background: var(--color-quiet-violet);
-    box-shadow: 0 0 24px rgb(var(--rgb-quiet-violet) / 0.42);
+    background: var(--color-hero-eyebrow-dot);
+    box-shadow: 0 0 24px rgb(var(--rgb-hero-eyebrow-dot) / 0.42);
   }
 
   .hero-title {
@@ -710,7 +785,7 @@
   }
 
   .hero-title--accent {
-    color: var(--color-golden-mist);
+    color: var(--color-hero-title-accent);
   }
 
   .hero-title--accent::after {
@@ -719,7 +794,7 @@
     height: 4px;
     margin: 16px 0 0;
     border-radius: 999px;
-    background: var(--color-golden-mist);
+    background: var(--color-hero-title-accent);
     content: '';
   }
 
@@ -983,7 +1058,7 @@
     border: 2.5px solid var(--detail-panel);
     border-radius: 24px;
     background: rgb(var(--rgb-cloud-dancer) / 0.72);
-    color: var(--color-blue-fusion);
+    color: var(--color-text-black);
     box-shadow: 0 24px 70px rgb(var(--rgb-blue-fusion) / 0.1);
     overflow: hidden;
   }
@@ -1001,7 +1076,7 @@
     height: 34px;
     border: 1px solid rgb(var(--rgb-cloud-cover) / 0.45);
     border-radius: 999px;
-    color: rgb(var(--rgb-blue-fusion) / 0.8);
+    color: rgb(var(--rgb-text-black) / 0.8);
     font-size: 24px;
     line-height: 1;
     background: rgb(var(--rgb-cloud-dancer) / 0.72);
@@ -1017,7 +1092,7 @@
 
   .strength-detail-eyebrow {
     margin: 0 0 16px;
-    color: var(--color-hematite);
+    color: var(--color-text-black);
     font-size: 12px;
     font-weight: 800;
     letter-spacing: 0.12em;
@@ -1026,7 +1101,7 @@
   .strength-detail-title {
     max-width: 560px;
     margin: 0;
-    color: var(--color-blue-fusion);
+    color: var(--color-text-black);
     font-size: clamp(22px, 2vw, 30px);
     font-weight: 900;
     line-height: 1.3;
@@ -1036,7 +1111,7 @@
   .strength-detail-body {
     max-width: 620px;
     margin: 18px 0 0;
-    color: var(--color-hematite);
+    color: var(--color-text-black);
     font-size: 16px;
     font-weight: 600;
     line-height: 1.75;
@@ -1055,7 +1130,7 @@
     border: 1px solid var(--detail-panel);
     border-radius: 999px;
     padding: 8px 13px;
-    color: var(--color-blue-fusion);
+    color: var(--color-text-black);
     font-size: 13px;
     font-weight: 800;
     background: rgb(var(--detail-panel-rgb) / 0.34);
@@ -1829,7 +1904,7 @@
     left: 50%;
     bottom: 98px;
     z-index: 5;
-    color: var(--color-blue-fusion);
+    color: var(--color-text-black);
     width: 152px;
     font-size: 17px;
     font-weight: 800;
@@ -1863,9 +1938,18 @@
 }
 
 @layer utilities {
+  .text-blue-fusion,
+  .text-hematite,
+  .hover\:text-blue-fusion:hover,
+  .hover\:text-hematite:hover {
+    color: var(--color-text-black);
+  }
+
   .text-neutral-900,
-  .hover\:text-neutral-900:hover {
-    color: var(--color-blue-fusion);
+  .text-neutral-950,
+  .hover\:text-neutral-900:hover,
+  .hover\:text-neutral-950:hover {
+    color: var(--color-text-black);
   }
 
   .scrollbar-hide {

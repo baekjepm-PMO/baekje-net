@@ -80,7 +80,7 @@ export default function ServiceSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, ease }}
-          className="text-baltic-sea text-[15px] font-extrabold tracking-[0.2em] uppercase mb-6"
+          className="main-section-kicker--service mb-6 text-[15px] font-extrabold uppercase tracking-[0.2em]"
         >
           {serviceData.label}
         </motion.p>
@@ -209,13 +209,13 @@ export default function ServiceSection() {
                   >
                     <div className="mb-3 h-px w-full overflow-hidden bg-cloud-dancer/25">
                       <motion.div
-                        className="h-full bg-golden-mist"
+                        className="service-showcase-progress h-full"
                         animate={{ width: isActive ? `${progress * 100}%` : '0%' }}
                         transition={{ duration: 0.12, ease: 'linear' }}
                       />
                     </div>
                     <div className="flex min-w-0 items-baseline gap-3">
-                      <span className={`text-xs font-semibold ${isActive ? 'text-golden-mist' : 'text-cloud-dancer/45'}`}>
+                      <span className={`service-showcase-number text-xs font-semibold ${isActive ? 'is-active' : 'text-cloud-dancer/45'}`}>
                         {item.num}
                       </span>
                       <span className={`truncate text-sm font-medium transition-colors md:text-base ${

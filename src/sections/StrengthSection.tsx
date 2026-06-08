@@ -7,21 +7,21 @@ const boxes = ['01', '02', '03'];
 const boxLabels = ['NETWORK', 'SPECIALIZED', 'SUPPLY'];
 const boxPalettes = [
   {
-    panel: 'var(--color-blue-fusion)',
-    panelSoft: 'var(--color-baltic-sea)',
-    panelRgb: 'var(--rgb-blue-fusion)',
+    panel: 'var(--color-strength-box-one)',
+    panelSoft: 'var(--color-strength-box-one)',
+    panelRgb: 'var(--rgb-strength-box-one)',
     edge: 'var(--color-hematite)',
   },
   {
-    panel: 'var(--color-veiled-vista)',
-    panelSoft: 'var(--color-baltic-sea)',
-    panelRgb: 'var(--rgb-veiled-vista)',
+    panel: 'var(--color-strength-box-two)',
+    panelSoft: 'var(--color-strength-box-two)',
+    panelRgb: 'var(--rgb-strength-box-two)',
     edge: 'var(--color-blue-fusion)',
   },
   {
-    panel: 'var(--color-golden-mist)',
-    panelSoft: 'var(--color-quiet-violet)',
-    panelRgb: 'var(--rgb-golden-mist)',
+    panel: 'var(--color-strength-box-three)',
+    panelSoft: 'var(--color-strength-box-three)',
+    panelRgb: 'var(--rgb-strength-box-three)',
     edge: 'var(--color-hematite)',
   },
 ] as const;
@@ -112,7 +112,7 @@ export default function StrengthSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, ease }}
-          className="text-[15px] font-extrabold uppercase tracking-[0.2em] text-baltic-sea"
+          className="main-section-kicker--strength text-[15px] font-extrabold uppercase tracking-[0.2em]"
         >
           {strengthData.label}
         </motion.p>
