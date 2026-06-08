@@ -73,11 +73,7 @@ export default function ServiceSection() {
   const active = serviceData.showcases[activeIndex];
 
   return (
-<<<<<<< HEAD
-    <section ref={sectionRef} className="relative bg-[var(--color-page-bg)] text-neutral-900">
-=======
     <section ref={sectionRef} className="relative bg-cloud-dancer text-blue-fusion">
->>>>>>> efbbb1c (han commit)
       {/* Heading */}
       <div ref={headingRef} className="relative z-10 -mb-48 max-w-[1440px] mx-auto px-6 md:-mb-56 md:px-12 lg:-mb-64 lg:px-20 xl:px-32 pt-24 md:pt-32 pb-6 md:pb-8">
         <motion.p
@@ -241,11 +237,7 @@ export default function ServiceSection() {
              transition feels like "the photo grows into the fullscreen". Other cards fade. */}
         <motion.div
           style={{ opacity: cardsOpacity }}
-<<<<<<< HEAD
-          className="absolute inset-0 z-30 pointer-events-none bg-[var(--color-page-bg)] flex items-center justify-center gap-2 px-6 md:gap-3 md:px-12 lg:gap-4 lg:px-20"
-=======
           className="absolute inset-0 z-30 pointer-events-none bg-cloud-dancer flex items-center justify-center gap-2 px-6 md:gap-3 md:px-12 lg:gap-4 lg:px-20"
->>>>>>> efbbb1c (han commit)
         >
           {serviceData.showcases.map((item, i) => {
             const isActive = i === activeIndex;
