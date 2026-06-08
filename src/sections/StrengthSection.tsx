@@ -7,22 +7,22 @@ const boxes = ['01', '02', '03'];
 const boxLabels = ['NETWORK', 'SPECIALIZED', 'SUPPLY'];
 const boxPalettes = [
   {
-    panel: '#B7D1EA',
-    panelSoft: '#B7D1EA',
-    panelRgb: '183 209 234',
-    edge: '#B7D1EA',
+    panel: 'var(--color-blue-fusion)',
+    panelSoft: 'var(--color-baltic-sea)',
+    panelRgb: 'var(--rgb-blue-fusion)',
+    edge: 'var(--color-hematite)',
   },
   {
-    panel: '#6DA9D2',
-    panelSoft: '#6DA9D2',
-    panelRgb: '109 169 210',
-    edge: '#6DA9D2',
+    panel: 'var(--color-veiled-vista)',
+    panelSoft: 'var(--color-baltic-sea)',
+    panelRgb: 'var(--rgb-veiled-vista)',
+    edge: 'var(--color-blue-fusion)',
   },
   {
-    panel: '#AAAAC4',
-    panelSoft: '#AAAAC4',
-    panelRgb: '170 170 196',
-    edge: '#AAAAC4',
+    panel: 'var(--color-golden-mist)',
+    panelSoft: 'var(--color-quiet-violet)',
+    panelRgb: 'var(--rgb-golden-mist)',
+    edge: 'var(--color-hematite)',
   },
 ] as const;
 const boxDetails = [
@@ -100,7 +100,7 @@ export default function StrengthSection() {
   return (
     <section
       ref={ref}
-      className="relative bg-[var(--color-page-bg)]"
+      className="relative bg-cloud-dancer"
       style={{
         minHeight: '860px',
         paddingTop: 'clamp(104px, 14vh, 150px)',
@@ -112,7 +112,7 @@ export default function StrengthSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, ease }}
-          className="text-[15px] font-extrabold uppercase tracking-[0.2em] text-rivulet-400"
+          className="text-[15px] font-extrabold uppercase tracking-[0.2em] text-baltic-sea"
         >
           {strengthData.label}
         </motion.p>
@@ -121,7 +121,7 @@ export default function StrengthSection() {
           initial={{ opacity: 0, y: 26 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.12, ease }}
-          className="mt-8 max-w-5xl text-2xl font-bold leading-[1.3] text-neutral-900 md:mt-10 md:text-3xl lg:text-4xl"
+          className="mt-8 max-w-5xl text-2xl font-bold leading-[1.3] text-blue-fusion md:mt-10 md:text-3xl lg:text-4xl"
         >
           대한민국 의약품 유통의 기준
         </motion.h2>
@@ -130,7 +130,7 @@ export default function StrengthSection() {
           initial={{ opacity: 0, y: 22 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.2, ease }}
-          className="mt-5 max-w-3xl text-base font-medium leading-[1.7] text-neutral-600 md:text-lg"
+          className="mt-5 max-w-3xl text-base font-medium leading-[1.7] text-hematite md:text-lg"
         >
           전국 유통망과 의약품 특화 물류를 기반으로, 필요한 곳에 안전하고 정확하게 공급합니다.
         </motion.p>

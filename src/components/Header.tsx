@@ -46,6 +46,8 @@ export default function Header() {
   const location = useLocation();
   const hasSolidHeader =
     isScrolled ||
+    location.pathname === '/' ||
+    location.pathname.startsWith('/palette/') ||
     location.pathname === '/company/overview' ||
     location.pathname === '/company/ceo-message';
 
@@ -64,7 +66,7 @@ export default function Header() {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${
         hasSolidHeader
-          ? 'bg-white/95 backdrop-blur-lg shadow-[0_1px_0_rgba(0,0,0,0.06)]'
+          ? 'site-header-scrolled'
           : 'bg-transparent'
       }`}
     >
@@ -74,7 +76,7 @@ export default function Header() {
           <Link to="/" className="flex items-center">
             <span
               className={`text-xl font-bold tracking-tight transition-colors duration-700 ${
-                hasSolidHeader ? 'text-neutral-900' : 'text-white'
+                hasSolidHeader ? 'text-blue-fusion' : 'text-cloud-dancer'
               }`}
             >
               백제약품
@@ -102,13 +104,13 @@ export default function Header() {
                   }}
                   className={`px-3.5 py-1.5 text-[13px] font-medium transition-colors duration-300 rounded-lg ${
                     hasSolidHeader
-                      ? 'text-neutral-600 hover:text-neutral-900'
-                      : 'text-white/70 hover:text-white'
+                      ? 'text-hematite hover:text-blue-fusion'
+                      : 'text-cloud-dancer/75 hover:text-cloud-dancer'
                   } ${
                     location.pathname.startsWith(item.path)
                       ? hasSolidHeader
-                        ? 'text-neutral-900'
-                        : 'text-white'
+                        ? 'text-blue-fusion'
+                        : 'text-cloud-dancer'
                       : ''
                   }`}
                 >
@@ -122,7 +124,7 @@ export default function Header() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 6 }}
                       transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-                      className="absolute top-full left-0 mt-1 bg-white rounded-xl shadow-xl border border-neutral-100 py-2 min-w-[220px]"
+                      className="absolute top-full left-0 mt-1 bg-cloud-dancer rounded-xl shadow-premium-sm border border-cloud-cover/35 py-2 min-w-[220px]"
                     >
                       {item.children.map((child) => (
                         <Link
@@ -130,8 +132,8 @@ export default function Header() {
                           to={child.path}
                           className={`block px-5 py-2.5 text-[13px] transition-colors ${
                             location.pathname === child.path
-                              ? 'text-primary-700 bg-primary-50/50'
-                              : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50'
+                              ? 'text-blue-fusion bg-veiled-vista/60'
+                              : 'text-hematite hover:text-blue-fusion hover:bg-veiled-vista/45'
                           }`}
                         >
                           {child.label}
@@ -147,8 +149,8 @@ export default function Header() {
             <button
               className={`ml-3 px-3 py-1.5 text-[11px] font-semibold tracking-wider rounded-full border transition-all duration-300 ${
                 hasSolidHeader
-                  ? 'border-neutral-200 text-neutral-500 hover:border-neutral-400 hover:text-neutral-900'
-                  : 'border-white/20 text-white/50 hover:border-white/40 hover:text-white'
+                  ? 'border-cloud-cover/50 text-hematite hover:border-golden-mist hover:text-blue-fusion'
+                  : 'border-cloud-dancer/25 text-cloud-dancer/60 hover:border-golden-mist hover:text-cloud-dancer'
               }`}
             >
               EN
@@ -161,9 +163,9 @@ export default function Header() {
             onClick={() => setMobileOpen(!mobileOpen)}
           >
             {mobileOpen ? (
-              <X className={hasSolidHeader ? 'text-neutral-900' : 'text-white'} size={22} />
+              <X className={hasSolidHeader ? 'text-blue-fusion' : 'text-cloud-dancer'} size={22} />
             ) : (
-              <Menu className={hasSolidHeader ? 'text-neutral-900' : 'text-white'} size={22} />
+              <Menu className={hasSolidHeader ? 'text-blue-fusion' : 'text-cloud-dancer'} size={22} />
             )}
           </button>
         </div>
@@ -177,21 +179,21 @@ export default function Header() {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-            className="lg:hidden bg-white border-t border-neutral-100 overflow-hidden"
+            className="lg:hidden bg-cloud-dancer border-t border-cloud-cover/35 overflow-hidden"
           >
             <div className="px-6 py-4 space-y-1">
               {navItems.map((item) => (
                 <div key={item.path}>
                   {item.children ? (
                     <>
-                      <div className="px-4 py-3 text-[13px] font-semibold text-neutral-900">
+                      <div className="px-4 py-3 text-[13px] font-semibold text-blue-fusion">
                         {item.label}
                       </div>
                       {item.children.map((child) => (
                         <Link
                           key={child.path}
                           to={child.path}
-                          className="block px-8 py-2.5 text-[13px] text-neutral-500 hover:text-neutral-900"
+                          className="block px-8 py-2.5 text-[13px] text-hematite hover:text-blue-fusion"
                         >
                           {child.label}
                         </Link>
@@ -200,15 +202,15 @@ export default function Header() {
                   ) : (
                     <Link
                       to={item.path}
-                      className="block px-4 py-3 text-[13px] font-semibold text-neutral-900 hover:text-primary-700"
+                      className="block px-4 py-3 text-[13px] font-semibold text-blue-fusion hover:text-baltic-sea"
                     >
                       {item.label}
                     </Link>
                   )}
                 </div>
               ))}
-              <div className="px-4 pt-3 border-t border-neutral-100">
-                <button className="px-3 py-1.5 text-[11px] font-semibold tracking-wider rounded-full border border-neutral-200 text-neutral-500">
+              <div className="px-4 pt-3 border-t border-cloud-cover/35">
+                <button className="px-3 py-1.5 text-[11px] font-semibold tracking-wider rounded-full border border-cloud-cover/50 text-hematite">
                   EN
                 </button>
               </div>

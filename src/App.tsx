@@ -12,6 +12,7 @@ import Contact from './pages/Contact';
 import Talent from './pages/Talent';
 import CompliancePage from './pages/CompliancePage';
 import CeoMessage from './pages/CeoMessage';
+import { getPaletteIdFromPath } from './theme/palettes';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -21,15 +22,23 @@ function ScrollToTop() {
   return null;
 }
 
-function App() {
+function AppShell() {
+  const location = useLocation();
+  const paletteId = getPaletteIdFromPath(location.pathname);
+
+  useEffect(() => {
+    document.documentElement.dataset.palette = paletteId;
+  }, [paletteId]);
+
   return (
-    <BrowserRouter>
+    <>
       <ScrollToTop />
-      <div className="min-h-screen bg-[var(--color-page-bg)]">
+      <div data-palette={paletteId} className="min-h-screen bg-cloud-dancer text-blue-fusion">
         <Header />
         <main>
           <Routes>
             <Route path="/" element={<MainPage />} />
+            <Route path="/palette/:paletteId" element={<MainPage />} />
             <Route path="/company/overview" element={<CompanyOverview />} />
             <Route path="/company/vision" element={<Vision />} />
             <Route path="/company/history" element={<History />} />
@@ -47,6 +56,14 @@ function App() {
         </main>
         <Footer />
       </div>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AppShell />
     </BrowserRouter>
   );
 }
