@@ -11,11 +11,7 @@ import LogisticsService from './pages/LogisticsService';
 import Contact from './pages/Contact';
 import Talent from './pages/Talent';
 import CompliancePage from './pages/CompliancePage';
-<<<<<<< HEAD
-import CeoMessage from './pages/CeoMessage';
-=======
 import { getPaletteIdFromPath } from './theme/palettes';
->>>>>>> bca57a6 (git coomit)
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -36,15 +32,7 @@ function AppShell() {
   return (
     <>
       <ScrollToTop />
-<<<<<<< HEAD
-<<<<<<< HEAD
-      <div className="min-h-screen bg-[var(--color-page-bg)]">
-=======
-      <div className="min-h-screen bg-cloud-dancer text-blue-fusion">
->>>>>>> efbbb1c (han commit)
-=======
       <div data-palette={paletteId} className="min-h-screen bg-cloud-dancer text-blue-fusion">
->>>>>>> bca57a6 (git coomit)
         <Header />
         <main>
           <Routes>
@@ -53,7 +41,6 @@ function AppShell() {
             <Route path="/company/overview" element={<CompanyOverview />} />
             <Route path="/company/vision" element={<Vision />} />
             <Route path="/company/history" element={<History />} />
-            <Route path="/company/ceo-message" element={<CeoMessage />} />
             <Route path="/company/group" element={<GroupCompanies />} />
             <Route path="/logistics" element={<LogisticsService />} />
             <Route path="/compliance" element={<CompliancePage title="준법경영" />} />

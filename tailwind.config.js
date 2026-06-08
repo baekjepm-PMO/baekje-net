@@ -1,26 +1,4 @@
-<<<<<<< HEAD
-const pantone = {
-<<<<<<< HEAD
-  aquaGray: '#A5B2AA',
-  regatta: '#497AB7',
-  rinsingRivulet: '#5CC6C3',
-  duskyCitron: '#E3CC81',
-  cloudDancer: '#F0EFEB',
-  stretchLimo: '#2B2C30',
-=======
-  cloudDancer: '#F1F0EC',
-  veiledVista: '#CBE8CE',
-  balticSea: '#7BB7DB',
-  goldenMist: '#D7CF92',
-  quietViolet: '#AA95B0',
-  cloudCover: '#9B9697',
-  hematite: '#787470',
-  blueFusion: '#53687C',
->>>>>>> efbbb1c (han commit)
-};
-=======
 const colorVar = (name) => `rgb(var(--rgb-${name}) / <alpha-value>)`;
->>>>>>> ee8b276 (git commit 2)
 
 const semanticScale = {
   DEFAULT: colorVar('regatta'),

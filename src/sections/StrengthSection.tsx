@@ -7,24 +7,6 @@ const boxes = ['01', '02', '03'];
 const boxLabels = ['NETWORK', 'SPECIALIZED', 'SUPPLY'];
 const boxPalettes = [
   {
-<<<<<<< HEAD
-    panel: '#B7D1EA',
-    panelSoft: '#B7D1EA',
-    panelRgb: '183 209 234',
-    edge: '#B7D1EA',
-  },
-  {
-    panel: '#6DA9D2',
-    panelSoft: '#6DA9D2',
-    panelRgb: '109 169 210',
-    edge: '#6DA9D2',
-  },
-  {
-    panel: '#AAAAC4',
-    panelSoft: '#AAAAC4',
-    panelRgb: '170 170 196',
-    edge: '#AAAAC4',
-=======
     panel: 'var(--color-blue-fusion)',
     panelSoft: 'var(--color-baltic-sea)',
     panelRgb: 'var(--rgb-blue-fusion)',
@@ -41,7 +23,6 @@ const boxPalettes = [
     panelSoft: 'var(--color-quiet-violet)',
     panelRgb: 'var(--rgb-golden-mist)',
     edge: 'var(--color-hematite)',
->>>>>>> efbbb1c (han commit)
   },
 ] as const;
 const boxDetails = [
@@ -119,11 +100,7 @@ export default function StrengthSection() {
   return (
     <section
       ref={ref}
-<<<<<<< HEAD
-      className="relative bg-[var(--color-page-bg)]"
-=======
       className="relative bg-cloud-dancer"
->>>>>>> efbbb1c (han commit)
       style={{
         minHeight: '860px',
         paddingTop: 'clamp(104px, 14vh, 150px)',
@@ -441,9 +418,9 @@ function OpenBox({
         <div className="strength-box-piece strength-box-wall strength-box-wall--left" />
         <div className="strength-box-piece strength-box-wall strength-box-wall--right" />
         <div className="strength-box-piece strength-box-wall strength-box-wall--front" />
+        <div className="strength-box-piece strength-box-flap strength-box-flap--back" />
         <div className="strength-box-piece strength-box-flap strength-box-flap--left" />
         <div className="strength-box-piece strength-box-flap strength-box-flap--right" />
-        <div className="strength-box-piece strength-box-flap strength-box-flap--back" />
         <div className="strength-box-piece strength-box-flap strength-box-flap--front" />
       </div>
       <span className="strength-box-label">{label}</span>

@@ -16,17 +16,9 @@ const KOREA_MAP_VIEW_BOX = '-40 -42 604 715';
 const GLOBE_AUTO_PLAY_START = 0.08;
 const GLOBE_AUTO_PLAY_END = 0.67;
 const GLOBE_AUTO_PLAY_DURATION = 3.0;
-const CONTENT_REVEAL_START = 0.29;
-const CONTENT_REVEAL_END = 0.36;
+const CONTENT_REVEAL_START = 0.37;
+const CONTENT_REVEAL_END = 0.45;
 const PALETTE = {
-<<<<<<< HEAD
-  cloudDancer: '#F0EFEB',
-  cloudDancerDeep: '#E4E3DF',
-  stretchLimo: '#2B2C30',
-  aquaGray: '#A5B2AA',
-  regatta: '#497AB7',
-  regattaDark: '#304868',
-=======
   cloudDancer: 'var(--color-cloud-dancer)',
   veiledVista: 'var(--color-veiled-vista)',
   balticSea: 'var(--color-baltic-sea)',
@@ -34,7 +26,6 @@ const PALETTE = {
   cloudCover: 'var(--color-cloud-cover)',
   hematite: 'var(--color-hematite)',
   blueFusion: 'var(--color-blue-fusion)',
->>>>>>> efbbb1c (han commit)
 };
 const NETWORK_TITLE_LINES = ['대한민국 헬스케어를', '연결하는 유통 네트워크'];
 const NETWORK_NODE_POOL = [
@@ -400,8 +391,8 @@ export default function NetworkSection() {
   });
 
   const curtainOpacity = useTransform(sceneProgress, [0, CONTENT_REVEAL_START - 0.03, CONTENT_REVEAL_END], [1, 1, 0]);
-  const globeY = useTransform(sceneProgress, [0, 0.075, 0.16], ['112vh', '12vh', '-4vh']);
-  const globeScale = useTransform(sceneProgress, [0, 0.075, 0.16], [0.48, 1.25, 1.68]);
+  const globeY = useTransform(sceneProgress, [0, 0.16, 0.28], ['112vh', '32vh', '0vh']);
+  const globeScale = useTransform(sceneProgress, [0, 0.16, 0.28], [0.28, 0.68, 1]);
   const globeOpacity = useTransform(sceneProgress, [0, 0.04, 1], [0, 1, 1]);
 
   const layoutY = useTransform(sceneProgress, [CONTENT_REVEAL_START, CONTENT_REVEAL_END], [28, 0]);

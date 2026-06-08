@@ -1,36 +1,10 @@
 import { useEffect, useRef } from 'react';
-import createGlobe, {
-  type COBEOptions,
-  type Globe,
-} from 'cobe';
+import * as THREE from 'three';
 
 type MotionProgress = {
   get: () => number;
   on: (event: 'change', callback: (latest: number) => void) => () => void;
 };
-
-type Location = [number, number];
-
-const DEVICE_PIXEL_RATIO_LIMIT = 2;
-
-const START_LOCATION: Location = [32, 102];
-
-const KOREA_FOCUS_LOCATION: Location = [36.4, 127.7];
-const START_PHI = longitudeToPhi(START_LOCATION[1]);
-const TARGET_PHI = longitudeToPhi(KOREA_FOCUS_LOCATION[1]);
-const START_THETA = degToRad(START_LOCATION[0]);
-const TARGET_THETA = degToRad(KOREA_FOCUS_LOCATION[0]);
-const REGATTA = [0.29, 0.48, 0.72] as const;
-const REGATTA_DARK = [0.19, 0.28, 0.41] as const;
-
-function degToRad(value: number) {
-  return (value * Math.PI) / 180;
-}
-
-function longitudeToPhi(longitude: number) {
-  return degToRad(270 - longitude);
-}
-
 
 const WORLD_MAP_SVG =
   '/assets/maps/world-equirectangular.svg';
@@ -47,21 +21,12 @@ const NASA_TERRA_FALLBACK_TEXTURE =
 const NASA_KOREA_DETAIL_TEXTURE =
   '/assets/maps/nasa-korea-detail-2025-04-29.png?v=5';
 const USE_NASA_DATED_TEXTURE = true;
-<<<<<<< HEAD
-const OCEAN_COLOR = '#252A2C';
-const LAND_BASE_COLOR = '#304868';
-const LAND_DARK_COLOR = { r: 0x34, g: 0x3a, b: 0x3d };
-const LAND_MID_COLOR = { r: 0x58, g: 0x7f, b: 0xbb };
-const LAND_BRIGHT_COLOR = { r: 0x5b, g: 0xc8, b: 0xc6 };
-const LIGHT_R = 226;
-=======
 const OCEAN_COLOR = '#53687C';
 const LAND_BASE_COLOR = '#CBE8CE';
 const LAND_DARK_COLOR = { r: 0x78, g: 0x74, b: 0x70 };
 const LAND_MID_COLOR = { r: 0x7b, g: 0xb7, b: 0xdb };
 const LAND_BRIGHT_COLOR = { r: 0xd7, g: 0xcf, b: 0x92 };
 const LIGHT_R = 215;
->>>>>>> efbbb1c (han commit)
 const LIGHT_G = 207;
 const LIGHT_B = 146;
 const KOREA_DETAIL_POINT_SCALE = 0.5;
@@ -345,7 +310,11 @@ const LIGHT_CORRIDORS: LightCorridor[] = [
 ];
 
 function clamp01(value: number) {
-  return Math.min(1, Math.max(0, value));
+  return Math.min(Math.max(value, 0), 1);
+}
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(Math.max(value, min), max);
 }
 
 function smoothstep(value: number) {
@@ -353,52 +322,1082 @@ function smoothstep(value: number) {
   return t * t * (3 - 2 * t);
 }
 
+function lerp(a: number, b: number, t: number) {
+  return a + (b - a) * t;
+}
+
+function normalizeAngle(angle: number) {
+  return Math.atan2(Math.sin(angle), Math.cos(angle));
+}
+
+function lerpAngle(from: number, to: number, t: number) {
+  return from + normalizeAngle(to - from) * t;
+}
+
+function degToRad(deg: number) {
+  return (deg / 180) * Math.PI;
+}
+
+function paintOcean(ctx: CanvasRenderingContext2D, width: number, height: number) {
+  ctx.fillStyle = OCEAN_COLOR;
+  ctx.fillRect(0, 0, width, height);
+}
+
+function makeSeededRandom(seed: number) {
+  let current = seed;
+
+  return () => {
+    current = (current * 48271) % 2147483647;
+    return (current - 1) / 2147483646;
+  };
+}
+
+// scaleX: latitude correction — 1/cos(lat) so dots appear circular on the sphere
+function drawCityLight(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  radius: number,
+  alpha: number,
+  scaleX: number = 1,
+) {
+  const hr = radius * 1.55;
+
+  ctx.save();
+  ctx.scale(scaleX, 1);
+  const sx = x / scaleX;
+
+  const halo = ctx.createRadialGradient(sx, y, 0, sx, y, hr);
+  halo.addColorStop(0,    `rgba(255, 222, 130, ${Math.min(alpha * 0.65, 0.78)})`);
+  halo.addColorStop(0.40, `rgba(255, 190, 75,  ${Math.min(alpha * 0.28, 0.36)})`);
+  halo.addColorStop(0.74, `rgba(255, 150, 40,  ${Math.min(alpha * 0.09, 0.12)})`);
+  halo.addColorStop(1,    'rgba(255, 110, 15, 0)');
+
+  ctx.fillStyle = halo;
+  ctx.beginPath();
+  ctx.arc(sx, y, hr, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = `rgba(255, 248, 200, ${Math.min(alpha * 2.0, 1.0)})`;
+  ctx.beginPath();
+  ctx.arc(sx, y, radius, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.restore();
+}
+
+function paintCityLights(
+  lightCtx: CanvasRenderingContext2D,
+  landMaskCtx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+) {
+  const random = makeSeededRandom(1205);
+  const landAlpha = landMaskCtx.getImageData(0, 0, width, height).data;
+  const getLandAlpha = (x: number, y: number) => {
+    const px = Math.round(x);
+    const py = Math.round(y);
+    if (px < 0 || px >= width || py < 0 || py >= height) return 0;
+
+    return landAlpha[(py * width + px) * 4 + 3] / 255;
+  };
+
+  lightCtx.clearRect(0, 0, width, height);
+  lightCtx.fillStyle = '#000000';
+  lightCtx.fillRect(0, 0, width, height);
+  lightCtx.save();
+  lightCtx.globalCompositeOperation = 'lighter';
+
+  LIGHT_CORRIDORS.forEach((corridor) => {
+    const from = latLonToTexturePoint(corridor.from[0], corridor.from[1], width, height);
+    const to = latLonToTexturePoint(corridor.to[0], corridor.to[1], width, height);
+
+    for (let i = 0; i < corridor.count; i += 1) {
+      const t = random();
+      const x = from.x + (to.x - from.x) * t + (random() - 0.5) * corridor.width;
+      const y = from.y + (to.y - from.y) * t + (random() - 0.5) * corridor.width * 0.72;
+      const wrappedX = (x + width) % width;
+
+      if (getLandAlpha(wrappedX, y) < 0.12) continue;
+
+      const latDegC = 90 - (y / height) * 180;
+      const sxC = 1 / Math.max(Math.cos(latDegC * Math.PI / 180), 0.25);
+      drawCityLight(
+        lightCtx,
+        wrappedX,
+        y,
+        0.08 + random() * 0.14,
+        0.82 + random() * 0.18,
+        sxC,
+      );
+    }
+  });
+
+  CITY_LIGHT_CLUSTERS.forEach((cluster) => {
+    const center = latLonToTexturePoint(cluster.lat, cluster.lon, width, height);
+    // latitude correction: 1/cos(lat) so cluster footprint is circular on the globe
+    const cosLat = Math.max(Math.cos(cluster.lat * Math.PI / 180), 0.25);
+    const dotScaleX = 1 / cosLat;
+    const count = Math.round(cluster.weight * 72);
+    const glowRadius = 10 + cluster.weight * 4.8;
+    const glow = lightCtx.createRadialGradient(center.x, center.y, 0, center.x, center.y, glowRadius);
+
+    glow.addColorStop(0, 'rgba(255, 230, 150, 0.07)');
+    glow.addColorStop(0.34, 'rgba(255, 210, 100, 0.03)');
+    glow.addColorStop(1, 'rgba(255, 180, 60, 0)');
+    lightCtx.fillStyle = glow;
+    lightCtx.beginPath();
+    lightCtx.arc(center.x, center.y, glowRadius, 0, Math.PI * 2);
+    lightCtx.fill();
+
+    for (let i = 0; i < count; i += 1) {
+      const angle = random() * Math.PI * 2;
+      // spread / cosLat in x so the scatter circle projects correctly on the sphere
+      const distance = Math.pow(random(), 0.62) * cluster.spread;
+      const x = (center.x + Math.cos(angle) * distance / cosLat + width) % width;
+      const y = center.y + Math.sin(angle) * distance;
+
+      if (y < 0 || y >= height) continue;
+      if (getLandAlpha(x, y) < 0.12) continue;
+
+      drawCityLight(
+        lightCtx,
+        x,
+        y,
+        random() > 0.88 ? 0.20 + random() * 0.14 : 0.07 + random() * 0.11,
+        0.82 + random() * 0.18,
+        dotScaleX,
+      );
+    }
+  });
+
+  lightCtx.restore();
+}
+
+function setSharpLightPixel(
+  data: Uint8ClampedArray,
+  width: number,
+  height: number,
+  x: number,
+  y: number,
+  value: number,
+  alpha: number,
+) {
+  if (x < 0 || x >= width || y < 0 || y >= height) return;
+
+  const index = (y * width + x) * 4;
+  const glow = value / 255;
+  const warmR = LIGHT_R;
+  const warmG = Math.round(LIGHT_G + glow * 12);
+  const warmB = Math.round(LIGHT_B + glow * 18);
+
+  if (alpha <= data[index + 3]) return;
+
+  data[index] = warmR;
+  data[index + 1] = warmG;
+  data[index + 2] = warmB;
+  data[index + 3] = alpha;
+}
+
+function paintSharpenedNightMap(
+  lightCtx: CanvasRenderingContext2D,
+  nightImage: HTMLImageElement,
+  width: number,
+  height: number,
+) {
+  const sourceCanvas = document.createElement('canvas');
+  sourceCanvas.width = width;
+  sourceCanvas.height = height;
+
+  const sourceCtx = sourceCanvas.getContext('2d');
+  if (!sourceCtx) return false;
+
+  sourceCtx.imageSmoothingEnabled = false;
+  sourceCtx.drawImage(nightImage, 0, 0, width, height);
+
+  const source = sourceCtx.getImageData(0, 0, width, height).data;
+  const output = lightCtx.createImageData(width, height);
+  const target = output.data;
+
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const index = (y * width + x) * 4;
+      const luma = source[index] * 0.2126 + source[index + 1] * 0.7152 + source[index + 2] * 0.0722;
+
+      if (luma < 34) continue;
+
+      const core = Math.min(255, 145 + (luma - 34) * 1.55);
+      setSharpLightPixel(target, width, height, x, y, core, Math.min(255, 170 + luma * 0.45));
+
+      if (luma > 74) {
+        const shoulder = core * 0.72;
+        const shoulderAlpha = Math.min(210, 92 + luma * 0.36);
+        setSharpLightPixel(target, width, height, x + 1, y, shoulder, shoulderAlpha);
+        setSharpLightPixel(target, width, height, x - 1, y, shoulder, shoulderAlpha);
+        setSharpLightPixel(target, width, height, x, y + 1, shoulder, shoulderAlpha);
+        setSharpLightPixel(target, width, height, x, y - 1, shoulder, shoulderAlpha);
+      }
+    }
+  }
+
+  lightCtx.clearRect(0, 0, width, height);
+  lightCtx.putImageData(output, 0, 0);
+
+  return true;
+}
+
+function paintLandFromNightMap(
+  ctx: CanvasRenderingContext2D,
+  landMaskCanvas: HTMLCanvasElement,
+  landToneImage: HTMLImageElement,
+  width: number,
+  height: number,
+) {
+  const landCanvas = document.createElement('canvas');
+  const toneCanvas = document.createElement('canvas');
+  landCanvas.width = width;
+  landCanvas.height = height;
+  toneCanvas.width = width;
+  toneCanvas.height = height;
+
+  const landCtx = landCanvas.getContext('2d');
+  const toneCtx = toneCanvas.getContext('2d', { willReadFrequently: true });
+  if (!landCtx || !toneCtx) return;
+
+  toneCtx.imageSmoothingEnabled = true;
+  toneCtx.drawImage(landToneImage, 0, 0, width, height);
+
+  const tone = toneCtx.getImageData(0, 0, width, height).data;
+  const mask = (() => {
+    const maskCtx = landMaskCanvas.getContext('2d', { willReadFrequently: true });
+    return maskCtx?.getImageData(0, 0, width, height).data;
+  })();
+  if (!mask) return;
+
+  const output = landCtx.createImageData(width, height);
+  const data = output.data;
+
+  for (let i = 0; i < data.length; i += 4) {
+    const alpha = mask[i + 3];
+    if (alpha <= 0) continue;
+
+    const luma = (tone[i] * 0.2126 + tone[i + 1] * 0.7152 + tone[i + 2] * 0.0722) / 255;
+    const lowerBand = smoothstep((luma - 0.07) / 0.042);
+    const upperBand = smoothstep((luma - 0.116) / 0.044);
+    const midR = lerp(LAND_DARK_COLOR.r, LAND_MID_COLOR.r, lowerBand);
+    const midG = lerp(LAND_DARK_COLOR.g, LAND_MID_COLOR.g, lowerBand);
+    const midB = lerp(LAND_DARK_COLOR.b, LAND_MID_COLOR.b, lowerBand);
+
+    data[i] = Math.round(lerp(midR, LAND_BRIGHT_COLOR.r, upperBand));
+    data[i + 1] = Math.round(lerp(midG, LAND_BRIGHT_COLOR.g, upperBand));
+    data[i + 2] = Math.round(lerp(midB, LAND_BRIGHT_COLOR.b, upperBand));
+    data[i + 3] = alpha;
+  }
+
+  landCtx.putImageData(output, 0, 0);
+
+  paintOcean(ctx, width, height);
+  ctx.save();
+  ctx.globalAlpha = 1;
+  ctx.drawImage(landMaskCanvas, 0, 0);
+  ctx.restore();
+
+  ctx.save();
+  ctx.shadowColor = 'rgba(160, 184, 224, 0.28)';
+  ctx.shadowBlur = 7;
+  ctx.drawImage(landCanvas, 0, 0);
+  ctx.restore();
+}
+
+function makeLightTexture(canvas: HTMLCanvasElement) {
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.anisotropy = 8;
+  texture.generateMipmaps = true;
+  texture.magFilter = THREE.LinearFilter;
+  texture.minFilter = THREE.LinearMipmapLinearFilter;
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.needsUpdate = true;
+  return texture;
+}
+
+function eastAsiaLightWeight(lat: number, lon: number) {
+  const broadLon =
+    smoothstep((lon - 101) / 5) * (1 - smoothstep((lon - 149) / 5));
+  const broadLat =
+    smoothstep((lat - 17) / 5) * (1 - smoothstep((lat - 50) / 5));
+  const coreLon =
+    smoothstep((lon - 106) / 4) * (1 - smoothstep((lon - 145) / 4));
+  const coreLat =
+    smoothstep((lat - 21) / 4) * (1 - smoothstep((lat - 47) / 4));
+
+  return clamp01(Math.max(broadLon * broadLat * 0.62, coreLon * coreLat));
+}
+
+function splitEastAsiaLights(
+  lightCtx: CanvasRenderingContext2D,
+  focusLightCtx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+) {
+  const sourceImage = lightCtx.getImageData(0, 0, width, height);
+  const source = sourceImage.data;
+  const focusImage = focusLightCtx.createImageData(width, height);
+  const focus = focusImage.data;
+  const minLon = 101;
+  const maxLon = 149;
+  const minLat = 17;
+  const maxLat = 50;
+  const startX = Math.max(0, Math.floor(((minLon + 180) / 360) * width));
+  const endX = Math.min(width - 1, Math.ceil(((maxLon + 180) / 360) * width));
+  const startY = Math.max(0, Math.floor(((90 - maxLat) / 180) * height));
+  const endY = Math.min(height - 1, Math.ceil(((90 - minLat) / 180) * height));
+
+  for (let y = startY; y <= endY; y += 1) {
+    const lat = 90 - (y / height) * 180;
+
+    for (let x = startX; x <= endX; x += 1) {
+      const index = (y * width + x) * 4;
+      const alpha = source[index + 3];
+      if (alpha <= 0) continue;
+
+      const lon = (x / width) * 360 - 180;
+      const weight = eastAsiaLightWeight(lat, lon);
+      if (weight <= 0.01) continue;
+
+      const focusAlpha = Math.round(alpha * weight);
+      source[index + 3] = alpha - focusAlpha;
+      focus[index] = source[index];
+      focus[index + 1] = source[index + 1];
+      focus[index + 2] = source[index + 2];
+      focus[index + 3] = focusAlpha;
+    }
+  }
+
+  lightCtx.putImageData(sourceImage, 0, 0);
+  focusLightCtx.clearRect(0, 0, width, height);
+  focusLightCtx.putImageData(focusImage, 0, 0);
+}
+
+function buildEarthTexture() {
+  const width = 5120;
+  const height = 2560;
+  const canvas = document.createElement('canvas');
+  const lightCanvas = document.createElement('canvas');
+  const focusLightCanvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  lightCanvas.width = width;
+  lightCanvas.height = height;
+  focusLightCanvas.width = width;
+  focusLightCanvas.height = height;
+
+  const ctx = canvas.getContext('2d');
+  const lightCtx = lightCanvas.getContext('2d');
+  const focusLightCtx = focusLightCanvas.getContext('2d');
+  if (!ctx || !lightCtx || !focusLightCtx) throw new Error('Canvas context is unavailable.');
+
+  paintOcean(ctx, width, height);
+  lightCtx.fillStyle = '#000000';
+  lightCtx.fillRect(0, 0, width, height);
+  focusLightCtx.clearRect(0, 0, width, height);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  const lightTexture = makeLightTexture(lightCanvas);
+  const focusLightTexture = makeLightTexture(focusLightCanvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.anisotropy = 8;
+  texture.generateMipmaps = true;
+  texture.magFilter = THREE.LinearFilter;
+  texture.minFilter = THREE.LinearMipmapLinearFilter;
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.needsUpdate = true;
+
+  return { canvas, ctx, texture, lightCtx, lightTexture, focusLightCtx, focusLightTexture };
+}
+
+function applyDatedEarthTexture(
+  canvas: HTMLCanvasElement,
+  ctx: CanvasRenderingContext2D,
+  texture: THREE.CanvasTexture,
+  lightCtx: CanvasRenderingContext2D,
+  lightTexture: THREE.CanvasTexture,
+  focusLightCtx: CanvasRenderingContext2D,
+  focusLightTexture: THREE.CanvasTexture,
+) {
+  const image = new Image();
+  const drawImage = () => {
+    const { width, height } = canvas;
+
+    ctx.clearRect(0, 0, width, height);
+    ctx.drawImage(image, 0, 0, width, height);
+    texture.needsUpdate = true;
+
+    lightCtx.clearRect(0, 0, width, height);
+    lightCtx.fillStyle = '#000000';
+    lightCtx.fillRect(0, 0, width, height);
+    focusLightCtx.clearRect(0, 0, width, height);
+    lightTexture.needsUpdate = true;
+    focusLightTexture.needsUpdate = true;
+  };
+  image.onload = drawImage;
+  image.onerror = () => {
+    if (image.src.endsWith(NASA_TERRA_FALLBACK_TEXTURE)) return;
+    image.src = NASA_TERRA_FALLBACK_TEXTURE;
+  };
+  image.src = NASA_TERRA_TEXTURE;
+}
+
+function applyExternalWorldMap(
+  canvas: HTMLCanvasElement,
+  ctx: CanvasRenderingContext2D,
+  texture: THREE.CanvasTexture,
+  lightCtx: CanvasRenderingContext2D,
+  lightTexture: THREE.CanvasTexture,
+  focusLightCtx: CanvasRenderingContext2D,
+  focusLightTexture: THREE.CanvasTexture,
+) {
+  if (USE_NASA_DATED_TEXTURE) {
+    applyDatedEarthTexture(
+      canvas,
+      ctx,
+      texture,
+      lightCtx,
+      lightTexture,
+      focusLightCtx,
+      focusLightTexture,
+    );
+    return;
+  }
+
+  const image = new Image();
+  image.crossOrigin = 'anonymous';
+
+  image.onload = () => {
+    const { width, height } = canvas;
+    const maskCanvas = document.createElement('canvas');
+    maskCanvas.width = width;
+    maskCanvas.height = height;
+
+    const maskCtx = maskCanvas.getContext('2d');
+    if (!maskCtx) return;
+
+    maskCtx.clearRect(0, 0, width, height);
+    maskCtx.drawImage(image, 0, 0, width, height);
+    maskCtx.globalCompositeOperation = 'source-in';
+
+    maskCtx.fillStyle = LAND_BASE_COLOR;
+    maskCtx.fillRect(0, 0, width, height);
+
+    paintOcean(ctx, width, height);
+    ctx.save();
+    ctx.shadowColor = 'rgba(160, 184, 224, 0.28)';
+    ctx.shadowBlur = 7;
+    ctx.drawImage(maskCanvas, 0, 0);
+    ctx.restore();
+
+    const landToneImage = new Image();
+    landToneImage.onload = () => {
+      paintLandFromNightMap(ctx, maskCanvas, landToneImage, width, height);
+      texture.needsUpdate = true;
+    };
+    landToneImage.src = NIGHT_LAND_TONE_MAP;
+
+    const nightImage = new Image();
+    nightImage.onload = () => {
+      if (!paintSharpenedNightMap(lightCtx, nightImage, width, height)) {
+        lightCtx.imageSmoothingEnabled = false;
+        lightCtx.clearRect(0, 0, width, height);
+        lightCtx.fillStyle = '#000000';
+        lightCtx.fillRect(0, 0, width, height);
+        lightCtx.drawImage(nightImage, 0, 0, width, height);
+      }
+      splitEastAsiaLights(lightCtx, focusLightCtx, width, height);
+      lightTexture.needsUpdate = true;
+      focusLightTexture.needsUpdate = true;
+    };
+    nightImage.onerror = () => {
+      paintCityLights(lightCtx, maskCtx, width, height);
+      splitEastAsiaLights(lightCtx, focusLightCtx, width, height);
+      lightTexture.needsUpdate = true;
+      focusLightTexture.needsUpdate = true;
+    };
+    nightImage.src = NIGHT_LIGHT_DOTS_MAP;
+
+    texture.needsUpdate = true;
+  };
+
+  image.src = WORLD_MAP_SVG;
+}
+
+function latLonToTexturePoint(lat: number, lon: number, width: number, height: number) {
+  return {
+    x: ((lon + 180) / 360) * width,
+    y: ((90 - lat) / 180) * height,
+  };
+}
+
+function isEastAsiaLatLon(lat: number, lon: number) {
+  return lat >= 20 && lat <= 47 && lon >= 104 && lon <= 146;
+}
+
+function isKoreaDetailLatLon(lat: number, lon: number) {
+  return lat >= 33 && lat <= 38.6 && lon >= 124.8 && lon <= 130.2;
+}
+
+function makeKoreaDetailLightPoints(): RegionalLightPoint[] {
+  const random = makeSeededRandom(6197);
+  const points: RegionalLightPoint[] = [];
+  const addPoint = (lat: number, lon: number, intensity: number, priority = 1.6) => {
+    if (!isKoreaDetailLatLon(lat, lon)) return;
+    points.push({
+      lat,
+      lon,
+      intensity: Math.min(intensity, 1),
+      priority,
+    });
+  };
+
+  KOREA_DETAIL_LOBES.forEach((lobe) => {
+    const cosLat = Math.max(Math.cos(degToRad(lobe.lat)), 0.38);
+    const rotation = degToRad(lobe.angle);
+    const cosAngle = Math.cos(rotation);
+    const sinAngle = Math.sin(rotation);
+    const count = Math.max(18, Math.round(lobe.count * KOREA_DETAIL_POINT_SCALE));
+
+    for (let i = 0; i < count; i += 1) {
+      const core = random() < 0.28;
+      const angle = random() * Math.PI * 2;
+      const distance =
+        Math.pow(random(), core ? 1.9 : 0.64) * (core ? 0.48 : 1);
+      const localX = Math.cos(angle) * distance * lobe.radiusLon;
+      const localY = Math.sin(angle) * distance * lobe.radiusLat;
+      const warp = Math.sin((localX * 24 + localY * 31 + lobe.lat) * 1.7) * 0.018;
+      const latOffset = localX * sinAngle + localY * cosAngle + warp;
+      const lonOffset = (localX * cosAngle - localY * sinAngle) / cosLat;
+      const spark = core || random() > 0.93 ? 0.08 : 0;
+
+      addPoint(
+        lobe.lat + latOffset,
+        lobe.lon + lonOffset,
+        lobe.intensity * (0.78 + random() * 0.22) + spark,
+        lobe.priority ?? 1.8,
+      );
+    }
+  });
+
+  for (let i = 0; i < 360; i += 1) {
+    const anchor = KOREA_DETAIL_LOBES[Math.floor(random() * KOREA_DETAIL_LOBES.length)];
+    const cosLat = Math.max(Math.cos(degToRad(anchor.lat)), 0.38);
+    const distance = Math.pow(random(), 0.38) * (0.2 + random() * 0.55);
+    const angle = random() * Math.PI * 2;
+
+    addPoint(
+      anchor.lat + Math.sin(angle) * distance * 0.52,
+      anchor.lon + (Math.cos(angle) * distance) / cosLat,
+      0.48 + random() * 0.28,
+      1.28,
+    );
+  }
+
+  return points;
+}
+
+function makeRegionalLightSpriteTexture(): THREE.CanvasTexture {
+  const size = 64;
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('Canvas context is unavailable.');
+
+  const center = size / 2;
+  const gradient = ctx.createRadialGradient(center, center, 0, center, center, center);
+  gradient.addColorStop(0, `rgba(${LIGHT_R}, ${Math.min(LIGHT_G + 12, 255)}, ${Math.min(LIGHT_B + 18, 255)}, 1)`);
+  gradient.addColorStop(0.22, `rgba(${LIGHT_R}, ${LIGHT_G}, ${LIGHT_B}, 0.94)`);
+  gradient.addColorStop(0.5, `rgba(${LIGHT_R}, ${LIGHT_G}, ${LIGHT_B}, 0.2)`);
+  gradient.addColorStop(1, `rgba(${LIGHT_R}, ${LIGHT_G}, ${LIGHT_B}, 0)`);
+
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, size, size);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.magFilter = THREE.LinearFilter;
+  texture.minFilter = THREE.LinearMipmapLinearFilter;
+  texture.needsUpdate = true;
+  return texture;
+}
+
+function latLonToSpherePoint(lat: number, lon: number, radius: number) {
+  const u = (lon + 180) / 360;
+  const theta = degToRad(90 - lat);
+  const phi = u * Math.PI * 2;
+
+  return new THREE.Vector3(
+    -Math.cos(phi) * Math.sin(theta) * radius,
+    Math.cos(theta) * radius,
+    Math.sin(phi) * Math.sin(theta) * radius,
+  );
+}
+
+function makeRegionalSurfacePatchGeometry(
+  minLat: number,
+  maxLat: number,
+  minLon: number,
+  maxLon: number,
+  radius: number,
+  widthSegments: number,
+  heightSegments: number,
+) {
+  const vertexCount = (widthSegments + 1) * (heightSegments + 1);
+  const positions = new Float32Array(vertexCount * 3);
+  const uvs = new Float32Array(vertexCount * 2);
+  const indices: number[] = [];
+
+  for (let y = 0; y <= heightSegments; y += 1) {
+    const v = y / heightSegments;
+    const lat = lerp(maxLat, minLat, v);
+
+    for (let x = 0; x <= widthSegments; x += 1) {
+      const u = x / widthSegments;
+      const lon = lerp(minLon, maxLon, u);
+      const point = latLonToSpherePoint(lat, lon, radius);
+      const vertexIndex = y * (widthSegments + 1) + x;
+      const positionIndex = vertexIndex * 3;
+      const uvIndex = vertexIndex * 2;
+
+      positions[positionIndex] = point.x;
+      positions[positionIndex + 1] = point.y;
+      positions[positionIndex + 2] = point.z;
+      uvs[uvIndex] = u;
+      uvs[uvIndex + 1] = 1 - v;
+
+      if (x === widthSegments || y === heightSegments) continue;
+
+      const a = vertexIndex;
+      const b = vertexIndex + 1;
+      const c = vertexIndex + widthSegments + 1;
+      const d = c + 1;
+      indices.push(a, c, b, b, c, d);
+    }
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+  geometry.setIndex(indices);
+  geometry.computeVertexNormals();
+  return geometry;
+}
+
+function makeRegionalLightPoints(): RegionalLightPoint[] {
+  const random = makeSeededRandom(9029);
+  const points: RegionalLightPoint[] = [];
+  const addPoint = (lat: number, lon: number, intensity: number) => {
+    if (!isEastAsiaLatLon(lat, lon)) return;
+    points.push({ lat, lon, intensity });
+  };
+
+  LIGHT_CORRIDORS.forEach((corridor) => {
+    if (
+      !isEastAsiaLatLon(corridor.from[0], corridor.from[1]) &&
+      !isEastAsiaLatLon(corridor.to[0], corridor.to[1])
+    ) {
+      return;
+    }
+
+    const count = Math.round(corridor.count * 0.32);
+    for (let i = 0; i < count; i += 1) {
+      const t = random();
+      const lat = lerp(corridor.from[0], corridor.to[0], t);
+      const lon = lerp(corridor.from[1], corridor.to[1], t);
+      const cosLat = Math.max(Math.cos(degToRad(lat)), 0.35);
+      const widthDeg = corridor.width * 0.035;
+
+      addPoint(
+        lat + (random() - 0.5) * widthDeg,
+        lon + ((random() - 0.5) * widthDeg * 1.4) / cosLat,
+        0.66 + random() * 0.32,
+      );
+    }
+  });
+
+  CITY_LIGHT_CLUSTERS.forEach((cluster) => {
+    if (!isEastAsiaLatLon(cluster.lat, cluster.lon)) return;
+
+    const count = Math.round(cluster.weight * 20);
+    const cosLat = Math.max(Math.cos(degToRad(cluster.lat)), 0.35);
+    const spreadDeg = cluster.spread * 0.045;
+
+    for (let i = 0; i < count; i += 1) {
+      const angle = random() * Math.PI * 2;
+      const distance = Math.pow(random(), 0.58) * spreadDeg;
+      const lat = cluster.lat + Math.sin(angle) * distance;
+      const lon = cluster.lon + (Math.cos(angle) * distance) / cosLat;
+      const coreBoost = random() > 0.88 ? 0.2 : 0;
+
+      addPoint(lat, lon, 0.58 + random() * 0.28 + coreBoost);
+    }
+  });
+
+  points.push(...makeKoreaDetailLightPoints());
+  return points;
+}
+
+function makeRegionalLightPointsFromNightImage(nightImage: HTMLImageElement): RegionalLightPoint[] {
+  const width = 4096;
+  const height = 2048;
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  if (!ctx) return makeRegionalLightPoints();
+
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(nightImage, 0, 0, width, height);
+
+  const data = ctx.getImageData(0, 0, width, height).data;
+  const random = makeSeededRandom(3841);
+  const points: RegionalLightPoint[] = [];
+  const minLon = 104;
+  const maxLon = 146;
+  const minLat = 20;
+  const maxLat = 47;
+  const startX = Math.floor(((minLon + 180) / 360) * width);
+  const endX = Math.ceil(((maxLon + 180) / 360) * width);
+  const startY = Math.floor(((90 - maxLat) / 180) * height);
+  const endY = Math.ceil(((90 - minLat) / 180) * height);
+  const targetPointCount = REGIONAL_NIGHT_POINT_COUNT;
+  const getLuma = (x: number, y: number) => {
+    if (x < startX || x > endX || y < startY || y > endY) return 0;
+
+    const index = (y * width + x) * 4;
+    return data[index] * 0.2126 + data[index + 1] * 0.7152 + data[index + 2] * 0.0722;
+  };
+
+  for (let y = startY; y <= endY; y += 1) {
+    for (let x = startX; x <= endX; x += 1) {
+      const index = (y * width + x) * 4;
+      const luma = data[index] * 0.2126 + data[index + 1] * 0.7152 + data[index + 2] * 0.0722;
+      if (luma < 18) continue;
+
+      let localHits = 0;
+      let localTotal = 0;
+
+      for (let oy = -6; oy <= 6; oy += 2) {
+        for (let ox = -6; ox <= 6; ox += 2) {
+          const sample = getLuma(x + ox, y + oy);
+          localTotal += sample;
+          if (sample > 18) localHits += 1;
+        }
+      }
+
+      const strength = clamp01((luma - 18) / 180);
+      const localDensity = clamp01((localHits - 1) / 14);
+      const localGlow = clamp01((localTotal / 49 - 10) / 58);
+      const weight = clamp01(strength * 0.38 + localDensity * 0.74 + localGlow * 0.28);
+      const repeatCount =
+        1 +
+        Math.floor(localDensity * 2.8) +
+        Math.floor(localGlow * 1.6) +
+        (random() < weight * 0.42 ? 1 : 0);
+      const jitterPixels = 0.64 + localDensity * 1.58 + strength * 0.36;
+
+      for (let i = 0; i < repeatCount; i += 1) {
+        const angle = random() * Math.PI * 2;
+        const distance = Math.pow(random(), 0.64) * jitterPixels;
+        const pixelNoiseX = random() - 0.5;
+        const pixelNoiseY = random() - 0.5;
+        const px = x + pixelNoiseX + Math.cos(angle) * distance;
+        const py = y + pixelNoiseY + Math.sin(angle) * distance;
+        const lon = ((px + random() * 0.08) / width) * 360 - 180;
+        const lat = 90 - ((py + random() * 0.08) / height) * 180;
+        if (!isEastAsiaLatLon(lat, lon)) continue;
+
+        points.push({
+          lat,
+          lon,
+          intensity: 0.62 + weight * 0.38,
+          priority: isKoreaDetailLatLon(lat, lon) ? 1.42 + weight * 0.42 : undefined,
+        });
+
+      }
+    }
+  }
+
+  points.push(...makeKoreaDetailLightPoints());
+
+  if (points.length <= targetPointCount) {
+    return points.length > 1200 ? points : makeRegionalLightPoints();
+  }
+
+  const selectionRandom = makeSeededRandom(7159);
+  return points
+    .map((point) => ({
+      point,
+      score:
+        (point.priority ?? 1) *
+        (0.54 + point.intensity * 0.46) *
+        (0.62 + selectionRandom() * 0.76),
+    }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, targetPointCount)
+    .map(({ point }) => point);
+}
+
+function makeRegionalLightGeometry(points: RegionalLightPoint[] = makeRegionalLightPoints()): THREE.BufferGeometry {
+  const positions = new Float32Array(points.length * 3);
+  const colors = new Float32Array(points.length * 3);
+
+  points.forEach((point, index) => {
+    const position = latLonToSpherePoint(point.lat, point.lon, 1.012);
+    const i = index * 3;
+    const intensity = Math.min(point.intensity, 1);
+
+    positions[i] = position.x;
+    positions[i + 1] = position.y;
+    positions[i + 2] = position.z;
+    const brightness = 0.68 + intensity * 0.32;
+    colors[i] = brightness;
+    colors[i + 1] = brightness;
+    colors[i + 2] = brightness;
+  });
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  return geometry;
+}
+
+function buildCloudTexture(): THREE.CanvasTexture {
+  const width = 2048;
+  const height = 1024;
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('Canvas context is unavailable.');
+
+  ctx.clearRect(0, 0, width, height);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.anisotropy = 8;
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.magFilter = THREE.LinearFilter;
+  texture.minFilter = THREE.LinearMipmapLinearFilter;
+  texture.needsUpdate = true;
+  return texture;
+}
+
+function applyCloudImageToTexture(image: HTMLImageElement, texture: THREE.CanvasTexture) {
+  const canvas = texture.image as HTMLCanvasElement;
+  const width = canvas.width;
+  const height = canvas.height;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  ctx.clearRect(0, 0, width, height);
+  ctx.drawImage(image, 0, 0, width, height);
+
+  const input = ctx.getImageData(0, 0, width, height);
+  const output = ctx.createImageData(width, height);
+  const source = input.data;
+  const data = output.data;
+
+  const longitudinalDistance = (lon: number, centerLon: number) => {
+    const delta = lon - centerLon;
+    return ((delta + 540) % 360) - 180;
+  };
+  const koreaClear = (lat: number, lon: number) => {
+    const dx = longitudinalDistance(lon, 127.7) * Math.max(Math.cos(degToRad(36.2)), 0.34);
+    const dy = lat - 36.2;
+    const core = Math.exp(-Math.pow(dx / 6.3, 2) - Math.pow(dy / 4.8, 2));
+    const shoulder = Math.exp(-Math.pow(dx / 9.4, 2) - Math.pow(dy / 6.8, 2)) * 0.78;
+
+    return clamp01(Math.max(core, shoulder));
+  };
+
+  for (let y = 0; y < height; y += 1) {
+    const lat = 90 - (y / height) * 180;
+
+    for (let x = 0; x < width; x += 1) {
+      const lon = (x / width) * 360 - 180;
+      const index = (y * width + x) * 4;
+      const luma =
+        (source[index] * 0.2126 + source[index + 1] * 0.7152 + source[index + 2] * 0.0722) / 255;
+      const cloud = Math.pow(smoothstep((luma - 0.055) / 0.78), 0.92);
+      const brokenEdge = smoothstep((luma - 0.115) / 0.18);
+      const clear = 1 - koreaClear(lat, lon) * 0.995;
+      const finalCloud = cloud * clear;
+      const core = smoothstep((luma - 0.48) / 0.42);
+      const alpha = finalCloud < 0.01
+        ? 0
+        : Math.round(finalCloud * lerp(84, 248, brokenEdge));
+      const gray = Math.round(lerp(164, 255, core));
+
+      data[index] = gray;
+      data[index + 1] = Math.round(lerp(170, 255, core));
+      data[index + 2] = Math.round(lerp(178, 255, core));
+      data[index + 3] = alpha;
+    }
+  }
+
+  ctx.putImageData(output, 0, 0);
+  texture.needsUpdate = true;
+}
+
+function makeStarField(): THREE.Points {
+  const count = 520;
+  const positions = new Float32Array(count * 3);
+  let seed = 17;
+
+  const random = () => {
+    seed = (seed * 48271) % 2147483647;
+    return (seed - 1) / 2147483646;
+  };
+
+  for (let i = 0; i < count; i++) {
+    const radius = 13 + random() * 17;
+    const theta = random() * Math.PI * 2;
+    const phi = Math.acos(2 * random() - 1);
+
+    positions[i * 3]     = radius * Math.sin(phi) * Math.cos(theta);
+    positions[i * 3 + 1] = radius * Math.cos(phi);
+    positions[i * 3 + 2] = radius * Math.sin(phi) * Math.sin(theta);
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+  return new THREE.Points(
+    geometry,
+    new THREE.PointsMaterial({
+      color: 0xa8d8ff,
+      size: 0.018,
+      transparent: true,
+      opacity: 0.3,
+      depthWrite: false,
+    }),
+  );
+}
+
+const ATMOSPHERE_VERTEX = `
+  varying vec3 vNormal;
+  void main() {
+    vNormal = normalize(normalMatrix * normal);
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
+
+function makeAtmosphereMaterial(color: THREE.Color, bias: number, power: number, alpha: number) {
+  return new THREE.ShaderMaterial({
+    vertexShader: ATMOSPHERE_VERTEX,
+    fragmentShader: `
+      varying vec3 vNormal;
+      void main() {
+        float rim = pow(max(0.0, ${bias.toFixed(2)} - dot(vNormal, vec3(0.0, 0.0, 1.0))), ${power.toFixed(1)});
+        gl_FragColor = vec4(${color.r.toFixed(3)}, ${color.g.toFixed(3)}, ${color.b.toFixed(3)}, rim * ${alpha.toFixed(2)});
+      }
+    `,
+    blending: THREE.AdditiveBlending,
+    side: THREE.FrontSide,
+    transparent: true,
+    depthWrite: false,
+    toneMapped: false,
+  });
+}
+
 function lateEaseOut(value: number, easeStart = 0.85) {
   const clamped = clamp01(value);
-  if (clamped <= easeStart) return clamped;
+  if (clamped <= easeStart) return clamped / easeStart * easeStart;
 
   const tail = (clamped - easeStart) / (1 - easeStart);
   return easeStart + (1 - easeStart) * (1 - Math.pow(1 - tail, 2));
 }
 
-function lerp(from: number, to: number, amount: number) {
-  return from + (to - from) * amount;
+const NIGHT_SHADOW_VERTEX = `
+  varying vec3 vViewNormal;
+  void main() {
+    vViewNormal = normalize(normalMatrix * normal);
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
+
+function makeNightShadowMaterial() {
+  return new THREE.ShaderMaterial({
+    vertexShader: NIGHT_SHADOW_VERTEX,
+    fragmentShader: `
+      varying vec3 vViewNormal;
+      void main() {
+        vec3 lightDirection = normalize(vec3(-0.62, 0.48, 0.62));
+        float illumination = dot(normalize(vViewNormal), lightDirection);
+        float night = 1.0 - smoothstep(0.06, 0.28, illumination);
+        float deepNight = 1.0 - smoothstep(-0.08, 0.22, illumination);
+        float alpha = clamp(night * 0.74 + deepNight * 0.5, 0.0, 1.0);
+        gl_FragColor = vec4(0.0, 0.0, 0.0, alpha);
+      }
+    `,
+    transparent: true,
+    depthWrite: false,
+    side: THREE.FrontSide,
+    toneMapped: false,
+  });
 }
 
-function lerpAngle(from: number, to: number, amount: number) {
-  const delta = Math.atan2(Math.sin(to - from), Math.cos(to - from));
-  return from + delta * amount;
+function makeDayHighlightMaterial() {
+  return new THREE.ShaderMaterial({
+    vertexShader: NIGHT_SHADOW_VERTEX,
+    fragmentShader: `
+      varying vec3 vViewNormal;
+      void main() {
+        vec3 lightDirection = normalize(vec3(-0.62, 0.48, 0.62));
+        float illumination = dot(normalize(vViewNormal), lightDirection);
+        float day = smoothstep(0.08, 0.92, illumination);
+        float brightCore = smoothstep(0.42, 1.0, illumination);
+        float alpha = clamp(day * 0.06 + brightCore * 0.08, 0.0, 0.14);
+        gl_FragColor = vec4(1.0, 1.0, 1.0, alpha);
+      }
+    `,
+    transparent: true,
+    depthWrite: false,
+    side: THREE.FrontSide,
+    toneMapped: false,
+  });
 }
 
-function getDevicePixelRatio() {
-  return Math.min(window.devicePixelRatio || 1, DEVICE_PIXEL_RATIO_LIMIT);
-}
-
-function makeGlobeOptions(width: number, height: number): COBEOptions {
-  return {
-    width,
-    height,
-    devicePixelRatio: getDevicePixelRatio(),
-    phi: START_PHI,
-    theta: START_THETA,
-    dark: 1,
-    diffuse: 1.35,
-    scale: 1,
-    mapSamples: 22000,
-    mapBrightness: 3.9,
-    mapBaseBrightness: 0.08,
-    baseColor: [...REGATTA_DARK],
-    markerColor: [...REGATTA],
-    glowColor: [...REGATTA],
-    markers: [],
-    arcs: [],
-    arcColor: [...REGATTA],
-    arcWidth: 0.48,
-    arcHeight: 0.34,
-    markerElevation: 0.035,
-    opacity: 1,
-    offset: [0, 0],
-  };
+function makeRegionalSurfacePatchMaterial(texture: THREE.Texture) {
+  return new THREE.ShaderMaterial({
+    uniforms: {
+      map: { value: texture },
+    },
+    vertexShader: `
+      varying vec2 vPatchUv;
+      void main() {
+        vPatchUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      uniform sampler2D map;
+      varying vec2 vPatchUv;
+      void main() {
+        vec4 color = texture2D(map, vPatchUv);
+        float edgeX = smoothstep(0.0, 0.1, vPatchUv.x) * (1.0 - smoothstep(0.9, 1.0, vPatchUv.x));
+        float edgeY = smoothstep(0.0, 0.1, vPatchUv.y) * (1.0 - smoothstep(0.9, 1.0, vPatchUv.y));
+        float alpha = edgeX * edgeY * color.a * 0.94;
+        gl_FragColor = vec4(color.rgb, alpha);
+      }
+    `,
+    transparent: true,
+    depthWrite: false,
+    side: THREE.FrontSide,
+    toneMapped: false,
+  });
 }
 
 export default function GlobeCanvas({
@@ -408,7 +1407,7 @@ export default function GlobeCanvas({
   className?: string;
   progress?: MotionProgress;
 }) {
-  const surfaceRef = useRef<HTMLDivElement>(null);
+  const mountRef = useRef<HTMLDivElement>(null);
   const scrollProgressRef = useRef(0);
 
   useEffect(() => {
@@ -421,87 +1420,344 @@ export default function GlobeCanvas({
   }, [progress]);
 
   useEffect(() => {
-    const surface = surfaceRef.current;
-    if (!surface) return undefined;
+    const element = mountRef.current;
+    if (!element) return undefined;
 
-    const canvas = document.createElement('canvas');
-    canvas.setAttribute('aria-label', 'Animated global network globe');
-    canvas.style.display = 'block';
-    canvas.style.width = '100%';
-    canvas.style.height = '100%';
-    canvas.style.contain = 'layout paint size';
-    surface.appendChild(canvas);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(element.clientWidth || 900, element.clientHeight || 900);
+    renderer.setClearColor(0x000000, 0);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.02;
+    element.appendChild(renderer.domElement);
+    renderer.domElement.style.cursor = 'grab';
+    renderer.domElement.style.touchAction = 'pan-y';
+    renderer.domElement.setAttribute('aria-label', 'Interactive rotating globe');
 
-    let globe: Globe | null = null;
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(
+      35,
+      (element.clientWidth || 900) / (element.clientHeight || 900),
+      0.1,
+      100,
+    );
+    camera.position.z = 3.8;
+
+    scene.add(makeStarField());
+    scene.add(new THREE.AmbientLight(0x142038, 0.28));
+
+    const sun = new THREE.DirectionalLight(0xfff4e6, 4.35);
+    sun.position.set(-4.6, 2.4, 6.2);
+    scene.add(sun);
+
+    const fill = new THREE.DirectionalLight(0xb7d6ff, 0.38);
+    fill.position.set(-0.8, -0.6, 5.6);
+    scene.add(fill);
+
+    const rim = new THREE.DirectionalLight(0x4f91ff, 0.72);
+    rim.position.set(4.5, -1.6, -4.2);
+    scene.add(rim);
+
+    const globeGroup = new THREE.Group();
+    scene.add(globeGroup);
+
+    const {
+      canvas,
+      ctx,
+      texture: earthTexture,
+      lightCtx,
+      lightTexture,
+      focusLightCtx,
+      focusLightTexture,
+    } = buildEarthTexture();
+    applyExternalWorldMap(
+      canvas,
+      ctx,
+      earthTexture,
+      lightCtx,
+      lightTexture,
+      focusLightCtx,
+      focusLightTexture,
+    );
+    const cloudTexture = buildCloudTexture();
+    let isDisposed = false;
+    const cloudImage = new Image();
+    cloudImage.onload = () => {
+      if (!isDisposed) applyCloudImageToTexture(cloudImage, cloudTexture);
+    };
+    cloudImage.src = CLOUDS_MAP;
+
+    const earthMaterial = new THREE.MeshStandardMaterial({
+      map: earthTexture,
+      color: new THREE.Color(1.06, 1.05, 1.03),
+      roughness: 0.92,
+      metalness: 0,
+    });
+
+    const earth = new THREE.Mesh(
+      new THREE.SphereGeometry(1, 144, 144),
+      earthMaterial,
+    );
+    globeGroup.add(earth);
+
+    const koreaDetailTexture = new THREE.TextureLoader().load(NASA_KOREA_DETAIL_TEXTURE);
+    koreaDetailTexture.colorSpace = THREE.SRGBColorSpace;
+    koreaDetailTexture.anisotropy = 8;
+    koreaDetailTexture.magFilter = THREE.LinearFilter;
+    koreaDetailTexture.minFilter = THREE.LinearMipmapLinearFilter;
+
+    const koreaDetailPatch = new THREE.Mesh(
+      makeRegionalSurfacePatchGeometry(18, 54, 108, 153, 1.0011, 120, 96),
+      makeRegionalSurfacePatchMaterial(koreaDetailTexture),
+    );
+    koreaDetailPatch.renderOrder = 1;
+    globeGroup.add(koreaDetailPatch);
+
+    const nightShadow = new THREE.Mesh(
+      new THREE.SphereGeometry(1.0015, 144, 144),
+      makeNightShadowMaterial(),
+    );
+    nightShadow.renderOrder = 2;
+    globeGroup.add(nightShadow);
+
+    const dayHighlight = new THREE.Mesh(
+      new THREE.SphereGeometry(1.0022, 144, 144),
+      makeDayHighlightMaterial(),
+    );
+    dayHighlight.renderOrder = 2;
+    globeGroup.add(dayHighlight);
+
+    const cityLightsMaterial = new THREE.MeshBasicMaterial({
+      map: lightTexture,
+      color: 0xffffff,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      opacity: 0,
+    });
+    cityLightsMaterial.toneMapped = false;
+
+    const cityLights = new THREE.Mesh(
+      new THREE.SphereGeometry(1.003, 144, 144),
+      cityLightsMaterial,
+    );
+    globeGroup.add(cityLights);
+
+    const focusCityLightsMaterial = new THREE.MeshBasicMaterial({
+      map: focusLightTexture,
+      color: 0xffffff,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      opacity: 0,
+    });
+    focusCityLightsMaterial.toneMapped = false;
+
+    const focusCityLights = new THREE.Mesh(
+      new THREE.SphereGeometry(1.004, 144, 144),
+      focusCityLightsMaterial,
+    );
+    globeGroup.add(focusCityLights);
+
+    const regionalLightTexture = makeRegionalLightSpriteTexture();
+    const regionalLightsMaterial = new THREE.PointsMaterial({
+      map: regionalLightTexture,
+      size: 6.25,
+      sizeAttenuation: false,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      opacity: 0,
+      vertexColors: true,
+    });
+    regionalLightsMaterial.toneMapped = false;
+
+    const regionalLights = new THREE.Points(
+      makeRegionalLightGeometry(),
+      regionalLightsMaterial,
+    );
+    regionalLights.renderOrder = 3;
+    globeGroup.add(regionalLights);
+
+    const regionalLightImage = new Image();
+    regionalLightImage.crossOrigin = 'anonymous';
+    regionalLightImage.onload = () => {
+      const geometry = makeRegionalLightGeometry(
+        makeRegionalLightPointsFromNightImage(regionalLightImage),
+      );
+
+      regionalLights.geometry.dispose();
+      regionalLights.geometry = geometry;
+    };
+    regionalLightImage.src = NIGHT_LIGHT_DOTS_MAP;
+
+    const clouds = new THREE.Mesh(
+      new THREE.SphereGeometry(1.014, 112, 112),
+      new THREE.MeshBasicMaterial({
+        map: cloudTexture,
+        color: 0xf1f7ff,
+        transparent: true,
+        opacity: 0,
+        depthWrite: false,
+      }),
+    );
+    globeGroup.add(clouds);
+
+    scene.add(
+      new THREE.Mesh(
+        new THREE.SphereGeometry(1.035, 96, 96),
+        makeAtmosphereMaterial(new THREE.Color(0x73c7ff), 0.93, 6.4, 0.92),
+      ),
+    );
+    scene.add(
+      new THREE.Mesh(
+        new THREE.SphereGeometry(1.045, 96, 96),
+        makeAtmosphereMaterial(new THREE.Color(0x2f9cff), 0.78, 3.2, 0.62),
+      ),
+    );
+    scene.add(
+      new THREE.Mesh(
+        new THREE.SphereGeometry(1.18, 96, 96),
+        makeAtmosphereMaterial(new THREE.Color(0x1766ba), 0.62, 4.8, 0.3),
+      ),
+    );
+
+    const targetRotationY = degToRad(270 - 126.98);
+    const startRotationY = degToRad(270 - 12);
+    const targetRotationX = degToRad(37.2);
+    const startRotationX = degToRad(18);
+    const clock = new THREE.Clock();
+
     let animationFrameId = 0;
-    let width = 0;
-    let height = 0;
-    const startTime = performance.now();
+    let elapsedTime = 0;
+    let isPointerDragging = false;
+    let activePointerId: number | null = null;
+    let dragStartX = 0;
+    let dragStartY = 0;
+    let dragBaseRotationX = 0;
+    let dragBaseRotationY = 0;
+    let dragRotationX = 0;
+    let dragRotationY = 0;
+    const handlePointerDown = (event: PointerEvent) => {
+      if (event.pointerType !== 'mouse' && event.pointerType !== 'pen') return;
 
-    const updateSize = () => {
-      const nextWidth = Math.max(1, Math.round(surface.clientWidth));
-      const nextHeight = Math.max(1, Math.round(surface.clientHeight));
-      if (nextWidth === width && nextHeight === height) return;
-
-      width = nextWidth;
-      height = nextHeight;
-
-      if (!globe) {
-        globe = createGlobe(canvas, makeGlobeOptions(width, height));
-        return;
-      }
-
-      globe.update({
-        width,
-        height,
-        devicePixelRatio: getDevicePixelRatio(),
-      });
+      isPointerDragging = true;
+      activePointerId = event.pointerId;
+      dragStartX = event.clientX;
+      dragStartY = event.clientY;
+      dragBaseRotationX = dragRotationX;
+      dragBaseRotationY = dragRotationY;
+      renderer.domElement.style.cursor = 'grabbing';
+      renderer.domElement.setPointerCapture(event.pointerId);
+      event.preventDefault();
     };
 
-    const render = (now: number) => {
-      updateSize();
+    const handlePointerMove = (event: PointerEvent) => {
+      if (!isPointerDragging || event.pointerId !== activePointerId) return;
+
+      const dx = event.clientX - dragStartX;
+      const dy = event.clientY - dragStartY;
+      dragRotationY = dragBaseRotationY + dx * 0.0052;
+      dragRotationX = clamp(dragBaseRotationX + dy * 0.0036, degToRad(-24), degToRad(24));
+    };
+
+    const stopPointerDrag = (event: PointerEvent) => {
+      if (event.pointerId !== activePointerId) return;
+
+      isPointerDragging = false;
+      activePointerId = null;
+      renderer.domElement.style.cursor = 'grab';
+
+      if (renderer.domElement.hasPointerCapture(event.pointerId)) {
+        renderer.domElement.releasePointerCapture(event.pointerId);
+      }
+    };
+
+    renderer.domElement.addEventListener('pointerdown', handlePointerDown);
+    renderer.domElement.addEventListener('pointermove', handlePointerMove);
+    renderer.domElement.addEventListener('pointerup', stopPointerDrag);
+    renderer.domElement.addEventListener('pointercancel', stopPointerDrag);
+    renderer.domElement.addEventListener('pointerleave', stopPointerDrag);
+
+    const render = () => {
+      animationFrameId = requestAnimationFrame(render);
+
+      const delta = Math.min(clock.getDelta(), 0.05);
+      elapsedTime += delta;
 
       const currentProgress = scrollProgressRef.current;
-      const focus = lateEaseOut((currentProgress - 0.045) / 0.105, 0.88);
-      const koreaCentering = smoothstep((currentProgress - 0.2) / 0.1);
-      const descent = smoothstep((currentProgress - 0.21) / 0.055);
-      const elapsedSeconds = (now - startTime) / 1000;
-      const ambientSpin = elapsedSeconds * 0.018 * (1 - focus);
+      const globeApproach = lateEaseOut((currentProgress - 0.08) / 0.22, 0.88);
+      const focus = globeApproach;
+      const surfaceZoom = globeApproach;
+      const regionalLightFade = 0;
+      const koreaCentering = smoothstep((currentProgress - 0.23) / 0.13);
+      const descentProgress = smoothstep((currentProgress - 0.33) / 0.1);
+      const globeDescend = Math.pow(descentProgress, 2.1);
+      const dragInfluence = 1 - smoothstep((currentProgress - 0.42) / 0.08);
 
-      globe?.update({
-        phi: lerpAngle(START_PHI, TARGET_PHI, focus) + ambientSpin,
-        theta: lerp(START_THETA, TARGET_THETA, focus),
-        scale: lerp(1.12, 1.72, focus),
-        mapBrightness: lerp(2.7, 4.35, koreaCentering),
-        offset: [0, 0],
-        opacity: lerp(1, 0, descent),
-      });
+      globeGroup.rotation.y = lerpAngle(startRotationY, targetRotationY, focus) + dragRotationY * dragInfluence;
+      globeGroup.rotation.x = lerp(startRotationX, targetRotationX, focus) + dragRotationX * dragInfluence;
+      globeGroup.position.x = lerp(0, 0.04, koreaCentering);
+      globeGroup.position.y = lerp(0, 0.03, koreaCentering) - globeDescend * 2.28;
+      clouds.rotation.y = elapsedTime * 0.0034 * (1 - focus);
+      cityLightsMaterial.opacity = 0;
+      focusCityLightsMaterial.opacity = 0;
+      regionalLightsMaterial.opacity = regionalLightFade;
+      camera.position.z = lerp(3.8, 2.74, surfaceZoom);
 
-      surface.style.opacity = String(lerp(1, 0, descent));
-      surface.style.transform = 'translate3d(0, 0, 0)';
-      animationFrameId = requestAnimationFrame(render);
+      renderer.render(scene, camera);
     };
 
-    const resizeObserver = new ResizeObserver(updateSize);
-    resizeObserver.observe(surface);
-    updateSize();
-    animationFrameId = requestAnimationFrame(render);
+    render();
+
+    const resizeObserver = new ResizeObserver(() => {
+      const width = element.clientWidth;
+      const height = element.clientHeight;
+      if (!width || !height) return;
+
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+      renderer.setSize(width, height);
+    });
+
+    resizeObserver.observe(element);
 
     return () => {
+      isDisposed = true;
       cancelAnimationFrame(animationFrameId);
+      renderer.domElement.removeEventListener('pointerdown', handlePointerDown);
+      renderer.domElement.removeEventListener('pointermove', handlePointerMove);
+      renderer.domElement.removeEventListener('pointerup', stopPointerDrag);
+      renderer.domElement.removeEventListener('pointercancel', stopPointerDrag);
+      renderer.domElement.removeEventListener('pointerleave', stopPointerDrag);
       resizeObserver.disconnect();
-      globe?.destroy();
-      surface.innerHTML = '';
+      earthTexture.dispose();
+      lightTexture.dispose();
+      focusLightTexture.dispose();
+      cloudTexture.dispose();
+      koreaDetailTexture.dispose();
+      regionalLightTexture.dispose();
+
+      scene.traverse((object) => {
+        if (!(object instanceof THREE.Mesh || object instanceof THREE.Points)) return;
+
+        object.geometry.dispose();
+
+        if (Array.isArray(object.material)) {
+          object.material.forEach((material) => material.dispose());
+        } else {
+          object.material.dispose();
+        }
+      });
+
+      renderer.dispose();
+
+      if (element.contains(renderer.domElement)) {
+        element.removeChild(renderer.domElement);
+      }
     };
   }, []);
 
-  return (
-    <div className={`relative ${className ?? ''}`} style={{ lineHeight: 0 }}>
-      <div
-        ref={surfaceRef}
-        className="relative h-full w-full will-change-transform"
-        style={{ transformOrigin: '50% 50%' }}
-      />
-    </div>
-  );
+  return <div ref={mountRef} className={className} style={{ lineHeight: 0 }} />;
 }
