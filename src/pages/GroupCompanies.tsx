@@ -87,10 +87,10 @@ function GroupCompanyRow({ company, index }: { company: Company; index: number }
     target: rowRef,
     offset: ['start 86%', 'end 42%'],
   });
-  const photoClip = useTransform(scrollYProgress, [0, 0.68], [0, 47.368]);
+  const photoClip = useTransform(scrollYProgress, [0.18, 0.72], [0, 72.222]);
   const photoClipNormal = useMotionTemplate`inset(0% ${photoClip}% 0% 0%)`;
   const photoClipReverse = useMotionTemplate`inset(0% 0% 0% ${photoClip}%)`;
-  const textClipEdge = useTransform(scrollYProgress, [0, 0.68], [63.2, 100]);
+  const textClipEdge = useTransform(scrollYProgress, [0.18, 0.72], [0, 100]);
   const textClipNormal = useMotionTemplate`inset(0% ${textClipEdge}% 0% 0%)`;
   const textClipReverse = useMotionTemplate`inset(0% 0% 0% ${textClipEdge}%)`;
 

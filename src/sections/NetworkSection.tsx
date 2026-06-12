@@ -1,23 +1,13 @@
-import { useMemo, useRef, useState, useEffect } from 'react';
+import { useMemo, useRef } from 'react';
 import {
-  animate,
   motion,
-  useScroll,
-  useTransform,
-  useMotionValue,
-  useMotionValueEvent,
+  useInView,
 } from 'framer-motion';
 import southKoreaMap from '@svg-maps/south-korea';
 import { networkData } from '../data/mainPage';
-import GlobeCanvas from '../components/GlobeCanvas';
 
 const ease = [0.25, 0.1, 0.25, 1] as const;
 const KOREA_MAP_VIEW_BOX = '-40 -42 604 715';
-const GLOBE_AUTO_PLAY_START = 0.08;
-const GLOBE_AUTO_PLAY_END = 0.67;
-const GLOBE_AUTO_PLAY_DURATION = 3.0;
-const CONTENT_REVEAL_START = 0.29;
-const CONTENT_REVEAL_END = 0.36;
 const PALETTE = {
   cloudDancer: 'var(--color-cloud-dancer)',
   veiledVista: 'var(--color-veiled-vista)',
@@ -159,11 +149,13 @@ function KoreaExternalMap({
   className = '',
   glow = true,
   active = false,
+  connectionsActive = active,
   nodes,
 }: {
   className?: string;
   glow?: boolean;
   active?: boolean;
+  connectionsActive?: boolean;
   nodes: KoreaNode[];
 }) {
   const connectionSegments = nodes.flatMap((from, fromIndex) =>
@@ -241,14 +233,14 @@ function KoreaExternalMap({
               vectorEffect="non-scaling-stroke"
               initial={{ pathLength: 0, opacity: 0 }}
               animate={
-                active
+                connectionsActive
                   ? { pathLength: 1, opacity: [0.38, 0.62, 0.38] }
                   : { pathLength: 0, opacity: 0 }
               }
               transition={
-                active
+                connectionsActive
                   ? {
-                      pathLength: { duration: 0.52, delay: 0.24 + index * 0.2, ease },
+                      pathLength: { duration: 0.66, delay: 0.24 + index * 0.2, ease },
                       opacity: {
                         duration: 2.8 + (index % 3) * 0.6,
                         delay: 0.5 + index * 0.2,
@@ -264,32 +256,32 @@ function KoreaExternalMap({
           {/* 정방향 — 웨이브 1 */}
           {connectionSegments.map((segment, index) => (
             <TravelingDot key={`dot-a-${index}`} from={segment.from} to={segment.to}
-              delay={0.8 + index * 0.6} speed={getDotSpeed(35, index, 1)} size={2.2} active={active} />
+              delay={0.8 + index * 0.6} speed={getDotSpeed(35, index, 1)} size={2.2} active={connectionsActive} />
           ))}
           {/* 정방향 — 웨이브 2 */}
           {connectionSegments.map((segment, index) => (
             <TravelingDot key={`dot-b-${index}`} from={segment.from} to={segment.to}
-              delay={5.0 + index * 0.7} speed={getDotSpeed(32, index, 2)} size={1.8} active={active} />
+              delay={5.0 + index * 0.7} speed={getDotSpeed(32, index, 2)} size={1.8} active={connectionsActive} />
           ))}
           {/* 정방향 — 웨이브 3 */}
           {connectionSegments.map((segment, index) => (
             <TravelingDot key={`dot-c-${index}`} from={segment.from} to={segment.to}
-              delay={10.0 + index * 0.5} speed={getDotSpeed(34, index, 3)} size={2.0} active={active} />
+              delay={10.0 + index * 0.5} speed={getDotSpeed(34, index, 3)} size={2.0} active={connectionsActive} />
           ))}
           {/* 역방향 — 웨이브 1 */}
           {connectionSegments.map((segment, index) => (
             <TravelingDot key={`dot-rev-a-${index}`} from={segment.to} to={segment.from}
-              delay={3.0 + index * 0.65} speed={getDotSpeed(31, index, 4)} size={2.1} active={active} />
+              delay={3.0 + index * 0.65} speed={getDotSpeed(31, index, 4)} size={2.1} active={connectionsActive} />
           ))}
           {/* 역방향 — 웨이브 2 */}
           {connectionSegments.map((segment, index) => (
             <TravelingDot key={`dot-rev-b-${index}`} from={segment.to} to={segment.from}
-              delay={7.5 + index * 0.55} speed={getDotSpeed(33, index, 5)} size={1.7} active={active} />
+              delay={7.5 + index * 0.55} speed={getDotSpeed(33, index, 5)} size={1.7} active={connectionsActive} />
           ))}
           {/* 역방향 — 웨이브 3 */}
           {connectionSegments.map((segment, index) => (
             <TravelingDot key={`dot-rev-c-${index}`} from={segment.to} to={segment.from}
-              delay={12.0 + index * 0.45} speed={getDotSpeed(36, index, 6)} size={2.0} active={active} />
+              delay={12.0 + index * 0.45} speed={getDotSpeed(36, index, 6)} size={2.0} active={connectionsActive} />
           ))}
 
           {nodes.map((node, index) => (
@@ -312,19 +304,7 @@ function KoreaExternalMap({
               }
               style={{ transformOrigin: `${node.x}px ${node.y}px` }}
             >
-              <circle cx={node.x} cy={node.y} r="8.5" fill={PALETTE.blueFusion} fillOpacity="0.16" />
-              <circle cx={node.x} cy={node.y} r="5.2" fill={PALETTE.cloudDancer} />
-              <circle
-                cx={node.x}
-                cy={node.y}
-                r="4.2"
-                fill="none"
-                stroke={PALETTE.blueFusion}
-                strokeOpacity="0.78"
-                strokeWidth="1.2"
-                vectorEffect="non-scaling-stroke"
-              />
-              <circle cx={node.x} cy={node.y} r="2.7" fill={PALETTE.blueFusion} />
+              <circle cx={node.x} cy={node.y} r="3.6" fill={PALETTE.blueFusion} />
             </motion.g>
           ))}
         </svg>
@@ -335,139 +315,47 @@ function KoreaExternalMap({
 
 export default function NetworkSection() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const globeAutoPlayRef = useRef<ReturnType<typeof animate> | null>(null);
-  const hasAutoPlayedGlobeRef = useRef(false);
-  const [layoutReady, setLayoutReady] = useState(false);
-  const [contentRevealed, setContentRevealed] = useState(false);
-  const sceneProgress = useMotionValue(0);
+  const mapInView = useInView(containerRef, { once: true, margin: '-18% 0px -18% 0px' });
   const networkNodes = useMemo(() => pickKoreaNodes(5), []);
 
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ['start start', 'end end'],
-  });
-
-  useEffect(() => {
-    sceneProgress.set(scrollYProgress.get());
-  }, [sceneProgress, scrollYProgress]);
-
-  useMotionValueEvent(scrollYProgress, 'change', (value) => {
-    if (value < GLOBE_AUTO_PLAY_START - 0.035) {
-      globeAutoPlayRef.current?.stop();
-      globeAutoPlayRef.current = null;
-      hasAutoPlayedGlobeRef.current = false;
-      sceneProgress.set(value);
-      return;
-    }
-
-    if (!hasAutoPlayedGlobeRef.current && value >= GLOBE_AUTO_PLAY_START) {
-      hasAutoPlayedGlobeRef.current = true;
-      globeAutoPlayRef.current?.stop();
-      sceneProgress.set(Math.max(sceneProgress.get(), value));
-      globeAutoPlayRef.current = animate(sceneProgress, GLOBE_AUTO_PLAY_END, {
-        duration: GLOBE_AUTO_PLAY_DURATION,
-        ease: 'linear',
-      });
-      return;
-    }
-
-    if (value >= GLOBE_AUTO_PLAY_END) {
-      globeAutoPlayRef.current?.stop();
-      globeAutoPlayRef.current = null;
-      sceneProgress.set(value);
-      return;
-    }
-
-    if (!hasAutoPlayedGlobeRef.current) sceneProgress.set(value);
-  });
-
-  useMotionValueEvent(sceneProgress, 'change', (value) => {
-    const shouldShowContent = value >= CONTENT_REVEAL_START;
-
-    if (shouldShowContent) {
-      setContentRevealed(true);
-      if (!layoutReady) setLayoutReady(true);
-    }
-  });
-
-  const curtainOpacity = useTransform(sceneProgress, [0, CONTENT_REVEAL_START - 0.03, CONTENT_REVEAL_END], [1, 1, 0]);
-  const globeY = useTransform(sceneProgress, [0, 0.075, 0.16], ['112vh', '12vh', '-4vh']);
-  const globeScale = useTransform(sceneProgress, [0, 0.075, 0.16], [0.48, 1.25, 1.68]);
-  const globeOpacity = useTransform(sceneProgress, [0, 0.04, 1], [0, 1, 1]);
-
-  const layoutY = useTransform(sceneProgress, [CONTENT_REVEAL_START, CONTENT_REVEAL_END], [28, 0]);
-  const contentY = useTransform(sceneProgress, [CONTENT_REVEAL_START, CONTENT_REVEAL_END], [18, 0]);
-  const finalMapY = useTransform(sceneProgress, [CONTENT_REVEAL_START, CONTENT_REVEAL_END], [24, 0]);
-  const finalMapScale = useTransform(sceneProgress, [CONTENT_REVEAL_START, CONTENT_REVEAL_END], [0.985, 1]);
-
   return (
-    <div id="network" ref={containerRef} className="relative bg-[var(--color-stretch-limo)] text-cloud-dancer" style={{ height: '340vh' }}>
-      <div className="sticky top-0 h-screen overflow-hidden">
-        <div className="absolute inset-0 bg-[var(--color-stretch-limo)]" />
+    <section
+      id="network"
+      ref={containerRef}
+      className="relative bg-[var(--color-stretch-limo)] py-24 text-cloud-dancer md:py-32 lg:min-h-screen lg:flex lg:items-center"
+    >
+      <div className="mx-auto w-full max-w-[1440px] px-6 md:px-12 lg:px-20 xl:px-32">
+        <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-16">
+          <div className="flex flex-col justify-center">
+            <p className="main-section-kicker--network mb-6 text-[15px] font-extrabold uppercase tracking-[0.2em]">
+              {networkData.label}
+            </p>
 
-        <motion.div
-          aria-hidden={!contentRevealed}
-          style={{ opacity: contentRevealed ? 1 : 0, y: layoutY }}
-          className={`absolute inset-0 z-10 flex items-center ${
-            contentRevealed ? 'visible' : 'invisible'
-          }`}
-        >
-          <div className="mx-auto w-full max-w-[1440px] px-6 md:px-12 lg:px-20 xl:px-32">
-            <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-16">
-              <motion.div style={{ y: contentY }} className="flex flex-col justify-center">
-                <p className="main-section-kicker--network mb-6 text-[15px] font-extrabold uppercase tracking-[0.2em]">
-                  {networkData.label}
-                </p>
+            <h2 className="mb-4 text-3xl font-bold leading-[1.2] md:text-4xl lg:text-5xl">
+              {NETWORK_TITLE_LINES.map((line) => (
+                <span key={line} className="block">
+                  {line}
+                </span>
+              ))}
+            </h2>
 
-                <h2 className="mb-4 text-3xl font-bold leading-[1.2] md:text-4xl lg:text-5xl">
-                  {NETWORK_TITLE_LINES.map((line) => (
-                    <span key={line} className="block">
-                      {line}
-                    </span>
-                  ))}
-                </h2>
-
-                <p className="text-lg font-light text-cloud-dancer/70">
-                  {networkData.subtitle}
-                </p>
-              </motion.div>
-
-              <motion.div
-                style={{ y: finalMapY, scale: finalMapScale }}
-                className="relative h-[380px] overflow-hidden rounded-[8px] border border-cloud-dancer/20 bg-cloud-dancer shadow-premium md:h-[460px] lg:h-[520px]"
-              >
-                <KoreaMapGrid id="networkFinalGrid" />
-                <KoreaExternalMap
-                  className="absolute inset-[2%] z-10"
-                  glow={false}
-                  active={layoutReady}
-                  nodes={networkNodes}
-                />
-              </motion.div>
-            </div>
+            <p className="text-lg font-light text-cloud-dancer/70">
+              {networkData.subtitle}
+            </p>
           </div>
-        </motion.div>
 
-        <motion.div
-          style={{ opacity: curtainOpacity }}
-          className="absolute inset-0 z-20 bg-[var(--color-stretch-limo)] pointer-events-none"
-        />
-
-        <motion.div
-          className="absolute inset-0 z-30 overflow-visible pointer-events-none"
-        >
-          <motion.div
-            style={{
-              y: globeY,
-              scale: globeScale,
-              opacity: globeOpacity,
-            }}
-            className="absolute inset-0 flex items-center justify-center"
-          >
-            <GlobeCanvas className="h-[112vh] w-[112vw]" progress={sceneProgress} />
-          </motion.div>
-        </motion.div>
+          <div className="relative h-[380px] overflow-hidden rounded-[8px] border border-cloud-dancer/20 bg-cloud-dancer shadow-premium md:h-[460px] lg:h-[520px]">
+            <KoreaMapGrid id="networkFinalGrid" />
+            <KoreaExternalMap
+              className="absolute inset-[2%] z-10"
+              glow={false}
+              active={mapInView}
+              connectionsActive={mapInView}
+              nodes={networkNodes}
+            />
+          </div>
+        </div>
       </div>
-    </div>
+    </section>
   );
 }
