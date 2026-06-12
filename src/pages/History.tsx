@@ -24,7 +24,7 @@ const historyParts: HistoryPart[] = [
     years: '1946 - 2018',
     title: '창업과 사업 기반 구축',
     description:
-      '회사의 출발, 법인 설립, 계열·관계 사업 확대를 통해 백제약품의 사업 기반을 구축했습니다.',
+      '회사의 출발, 법인 설립, 계열·관계 사업 확대를 통해\n백제약품의 사업 기반을 구축했습니다.',
     image:
       'https://images.pexels.com/photos/356040/pexels-photo-356040.jpeg?auto=compress&cs=tinysrgb&w=1600',
     imageAlt: '의약품 연구 이미지',
@@ -75,7 +75,7 @@ const historyParts: HistoryPart[] = [
     years: '1976 - 2007',
     title: '교육·복지 및 사회공헌',
     description:
-      '교육기관과 복지재단 설립을 통해 지역사회에 기여하며, 기업의 사회적 역할을 함께 강화했습니다.',
+      '교육기관과 복지재단 설립을 통해 지역사회에 기여하며,\n기업의 사회적 역할을 함께 강화했습니다.',
     image:
       'https://images.pexels.com/photos/3183197/pexels-photo-3183197.jpeg?auto=compress&cs=tinysrgb&w=1600',
     imageAlt: '교육과 회의 이미지',
@@ -137,6 +137,21 @@ function FixedRevealImage({ part }: { part: HistoryPart }) {
   );
 }
 
+function HistoryWatermarkNumber({ number, className }: { number: string; className: string }) {
+  return (
+    <span aria-hidden="true" className={className}>
+      {Array.from(number).map((digit, index) => (
+        <span
+          key={`${digit}-${index}`}
+          className={`inline-block ${digit === '3' || digit === '4' ? 'scale-[0.86] -translate-y-[0.045em]' : ''}`}
+        >
+          {digit}
+        </span>
+      ))}
+    </span>
+  );
+}
+
 function HistoryDesktopPart({ part }: { part: HistoryPart }) {
   const isReversed = Number(part.number) % 2 === 0;
 
@@ -173,14 +188,20 @@ function HistoryDesktopPart({ part }: { part: HistoryPart }) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.25 }}
             transition={{ duration: 0.76, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
-            className={`${part.tone} ${part.textTone} relative z-20 row-start-1 overflow-hidden rounded-sm px-8 py-6 shadow-[0_18px_46px_rgba(43,44,48,0.14)] ${isReversed ? 'col-start-2' : 'col-start-3'}`}
+            className={`${part.tone} ${part.textTone} relative z-20 row-start-1 flex min-h-[220px] flex-col justify-end overflow-hidden rounded-sm px-8 py-7 shadow-[0_18px_46px_rgba(43,44,48,0.14)] xl:px-10 ${isReversed ? 'col-start-2' : 'col-start-3'}`}
           >
-            <h2 className="text-[2.125rem] font-black leading-[1.08] tracking-normal xl:text-[2.75rem]">
-              {part.title}
-            </h2>
-            <p className="mt-4 max-w-[560px] text-base font-semibold leading-[1.75] opacity-[0.82]">
-              {part.description}
-            </p>
+            <HistoryWatermarkNumber
+              number={part.number}
+              className="pointer-events-none absolute right-8 top-1 font-serif text-[7.5rem] font-black leading-none tracking-[-0.04em] text-neutral-950/[0.07] xl:right-10 xl:top-2 xl:text-[8.5rem]"
+            />
+            <div className="relative z-10 max-w-[620px]">
+              <h2 className="text-[2rem] font-black leading-[1.04] tracking-normal xl:text-[2.55rem]">
+                {part.title}
+              </h2>
+              <p className="mt-4 max-w-[540px] whitespace-pre-line text-base font-semibold leading-[1.62] opacity-[0.84]">
+                {part.description}
+              </p>
+            </div>
           </motion.div>
 
           <motion.div
@@ -214,14 +235,17 @@ function HistoryMobilePart({ part }: { part: HistoryPart }) {
   return (
     <section className="bg-[var(--color-page-bg)] px-6 py-14 lg:hidden">
       <div className="mx-auto max-w-[680px]">
-        <div className={`${part.tone} ${part.textTone} rounded-sm px-6 py-6`}>
-          <p className="text-sm font-black opacity-75">
-            PART {part.number} · {part.years}
-          </p>
-          <h2 className="mt-5 text-3xl font-black leading-tight">{part.title}</h2>
-          <p className="mt-4 text-base font-semibold leading-[1.75] opacity-[0.85]">
-            {part.description}
-          </p>
+        <div className={`${part.tone} ${part.textTone} relative overflow-hidden rounded-sm px-6 py-7`}>
+          <HistoryWatermarkNumber
+            number={part.number}
+            className="pointer-events-none absolute right-5 top-1 font-serif text-[5rem] font-black leading-none tracking-[-0.04em] text-neutral-950/[0.07]"
+          />
+          <div className="relative z-10">
+            <h2 className="text-3xl font-black leading-[1.05]">{part.title}</h2>
+            <p className="mt-4 whitespace-pre-line text-base font-semibold leading-[1.62] opacity-[0.85]">
+              {part.description}
+            </p>
+          </div>
         </div>
 
         <div className={`${part.frameTone} mt-4 aspect-[16/10] overflow-hidden rounded-sm`}>

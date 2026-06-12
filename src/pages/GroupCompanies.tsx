@@ -87,7 +87,7 @@ function GroupCompanyRow({ company, index }: { company: Company; index: number }
     target: rowRef,
     offset: ['start 86%', 'end 42%'],
   });
-  const photoClip = useTransform(scrollYProgress, [0.18, 0.72], [0, 72.222]);
+  const photoClip = useTransform(scrollYProgress, [0.18, 0.72], [0, 71]);
   const photoClipNormal = useMotionTemplate`inset(0% ${photoClip}% 0% 0%)`;
   const photoClipReverse = useMotionTemplate`inset(0% 0% 0% ${photoClip}%)`;
   const textClipEdge = useTransform(scrollYProgress, [0.18, 0.72], [0, 100]);
@@ -162,26 +162,30 @@ export default function GroupCompanies() {
             transition={{ duration: 0.6 }}
             className="group-companies-hero__stage"
           >
-            <h1 className="group-companies-hero__title">
-              <span className="group-companies-hero__title-line group-companies-hero__title-line--one">
-                의약품에서
-              </span>
-              <span className="group-companies-hero__title-line group-companies-hero__title-line--two">
-                시작해
-              </span>
-              <span className="group-companies-hero__title-line group-companies-hero__title-line--three">
-                사회로
-              </span>
-              <span className="group-companies-hero__title-line group-companies-hero__title-line--four">
-                이어지는 그룹
-              </span>
-            </h1>
+            <div className="group-companies-hero__headline">
+              <h1 className="group-companies-hero__title">
+                <span className="group-companies-hero__title-line group-companies-hero__title-line--one">
+                  의약품에서
+                </span>
+                <span className="group-companies-hero__title-line group-companies-hero__title-line--two">
+                  시작해
+                </span>
+                <span className="group-companies-hero__title-line group-companies-hero__title-line--three">
+                  사회로
+                </span>
+                <span className="group-companies-hero__title-line group-companies-hero__title-line--four">
+                  이어지는 그룹
+                </span>
+              </h1>
 
-            <p className="group-companies-hero__copy">
-              생명을 다루는 일에서 시작해<br />
-              교육·환경·복지로 이어지는 사회적 책임까지.<br />
-              백제약품 그룹은 사람의 건강한 삶 전체를 함께합니다.
-            </p>
+              <p className="group-companies-hero__copy">
+                <span className="group-companies-hero__copy-line">
+                  생명을 다루는 일에서 시작해, 교육·환경·복지로 이어지는 사회적 책임까지.
+                </span>
+                <br />
+                백제약품 그룹은 사람의 건강한 삶 전체를 함께합니다.
+              </p>
+            </div>
 
             <nav aria-label="그룹사 목차" className="group-companies-hero__index">
               <ol>
