@@ -514,7 +514,7 @@
     display: grid;
     grid-template-areas: 'photo body';
     grid-template-columns: minmax(260px, 0.58fr) minmax(0, 1.42fr);
-    min-height: clamp(340px, 38vw, 500px);
+    min-height: clamp(360px, 36vw, 520px);
     overflow: hidden;
     border-bottom: 1px solid rgb(var(--rgb-blue-fusion) / 0.16);
   }
@@ -543,7 +543,7 @@
   }
 
   .group-company-row__photo--mask-reveal {
-    width: 190%;
+    width: 360%;
     box-shadow: 22px 0 62px rgb(8 15 24 / 0.1);
     will-change: clip-path;
     transform: translateZ(0);
@@ -1185,7 +1185,7 @@
 
   .hero-about-kicker {
     position: absolute;
-    top: clamp(148px, 17vh, 188px);
+    top: clamp(104px, calc(21vh - 44px), 184px);
     left: 0;
     right: 0;
     z-index: 2;
@@ -1229,8 +1229,8 @@
 
   .hero-piece-back strong {
     position: absolute;
-    top: 126px;
-    left: 40px;
+    top: 66px;
+    left: 52px;
     display: block;
     font-size: 92px;
     font-weight: 900;
@@ -1252,10 +1252,15 @@
     text-align: right;
   }
 
-  .hero-piece-back--dark strong,
-  .hero-piece-back--citron strong {
-    left: 28px;
+  .hero-piece-back--dark strong {
+    left: 52px;
     font-size: 58px;
+    white-space: nowrap;
+  }
+
+  .hero-piece-back--citron strong {
+    left: 52px;
+    font-size: 64px;
     white-space: nowrap;
   }
 
@@ -1381,10 +1386,14 @@
       font-size: 108px;
     }
 
-    .hero-piece-back--dark strong,
-    .hero-piece-back--citron strong {
-      left: 30px;
+    .hero-piece-back--dark strong {
+      left: 52px;
       font-size: 68px;
+    }
+
+    .hero-piece-back--citron strong {
+      left: 52px;
+      font-size: 74px;
     }
 
     .hero-piece-label {
@@ -1432,15 +1441,19 @@
     }
 
     .hero-piece-back strong {
-      top: 138px;
-      left: 46px;
+      top: 72px;
+      left: 58px;
       font-size: 120px;
     }
 
-    .hero-piece-back--dark strong,
-    .hero-piece-back--citron strong {
-      left: 28px;
+    .hero-piece-back--dark strong {
+      left: 58px;
       font-size: 70px;
+    }
+
+    .hero-piece-back--citron strong {
+      left: 58px;
+      font-size: 78px;
     }
 
     .hero-piece-label {
@@ -1524,15 +1537,19 @@
     }
 
     .hero-piece-back strong {
-      top: 84px;
-      left: 20px;
+      top: 64px;
+      left: 24px;
       font-size: 54px;
     }
 
-    .hero-piece-back--dark strong,
-    .hero-piece-back--citron strong {
-      left: 20px;
+    .hero-piece-back--dark strong {
+      left: 24px;
       font-size: 42px;
+    }
+
+    .hero-piece-back--citron strong {
+      left: 24px;
+      font-size: 45px;
     }
 
     .hero-piece-label {
@@ -1700,6 +1717,14 @@
     transition: opacity 220ms ease 0ms;
   }
 
+  .strength-drink-layer {
+    transform: translateZ(36px) rotateX(-62deg) translateX(-30px);
+  }
+
+  .strength-pill-layer {
+    transform: translateZ(36px) rotateX(-62deg) translateX(-22px);
+  }
+
   .strength-contained-icon {
     position: absolute;
     left: 50%;
@@ -1837,7 +1862,7 @@
 
   .strength-pill--one {
     --pill-start-x: -88px;
-    --pill-end-x: -94px;
+    --pill-end-x: -88px;
     --pill-end-y: 36px;
     --pill-start-rotate: -6deg;
     --pill-end-rotate: -4deg;
@@ -1847,7 +1872,7 @@
 
   .strength-pill--two {
     --pill-start-x: -20px;
-    --pill-end-x: -62px;
+    --pill-end-x: -56px;
     --pill-end-y: 38px;
     --pill-start-rotate: 2deg;
     --pill-end-rotate: 0deg;
@@ -1859,7 +1884,7 @@
 
   .strength-pill--three {
     --pill-start-x: 52px;
-    --pill-end-x: -30px;
+    --pill-end-x: -24px;
     --pill-end-y: 36px;
     --pill-start-rotate: 10deg;
     --pill-end-rotate: 4deg;
@@ -1965,7 +1990,7 @@
 
   .strength-infusion--one {
     --item-start-x: -72px;
-    --item-end-x: -28px;
+    --item-end-x: -13px;
     --item-end-y: 36px;
     --item-start-rotate: -8deg;
     --item-end-rotate: -2deg;
@@ -1975,7 +2000,7 @@
 
   .strength-infusion--two {
     --item-start-x: 42px;
-    --item-end-x: 4px;
+    --item-end-x: 19px;
     --item-end-y: 36px;
     --item-start-rotate: 10deg;
     --item-end-rotate: 2deg;
@@ -2020,7 +2045,7 @@
 
   .strength-roll--logistics {
     --item-start-x: -116px;
-    --item-end-x: -104px;
+    --item-end-x: -112px;
     --item-end-y: 34px;
     --item-start-rotate: -14deg;
     --item-end-rotate: -4deg;
@@ -2030,7 +2055,7 @@
 
   .strength-roll--logistics-two {
     --item-start-x: -74px;
-    --item-end-x: -66px;
+    --item-end-x: -74px;
     --item-end-y: 34px;
     --item-start-rotate: 7deg;
     --item-end-rotate: 3deg;
@@ -2062,7 +2087,7 @@
   .strength-ampule--one {
     --ampule-liquid: rgb(var(--rgb-quiet-violet) / 0.62);
     --item-start-x: 44px;
-    --item-end-x: 40px;
+    --item-end-x: 60px;
     --item-end-y: 34px;
     --item-start-rotate: -2deg;
     --item-end-rotate: -1deg;
@@ -2073,7 +2098,7 @@
   .strength-ampule--two {
     --ampule-liquid: rgb(var(--rgb-baltic-sea) / 0.5);
     --item-start-x: 66px;
-    --item-end-x: 66px;
+    --item-end-x: 76px;
     --item-end-y: 34px;
     --item-start-rotate: 2deg;
     --item-end-rotate: 0deg;
@@ -2127,7 +2152,7 @@
     --drink-cap: rgba(140, 61, 55, 0.78);
     --drink-label: rgba(210, 202, 170, 0.72);
     --item-start-x: -104px;
-    --item-end-x: -96px;
+    --item-end-x: -84px;
     --item-end-y: 36px;
     --item-start-rotate: -10deg;
     --item-end-rotate: -3deg;
@@ -2141,7 +2166,7 @@
     --drink-cap: rgb(var(--rgb-blue-fusion) / 0.78);
     --drink-label: rgb(var(--rgb-baltic-sea) / 0.7);
     --item-start-x: -78px;
-    --item-end-x: -64px;
+    --item-end-x: -58px;
     --item-end-y: 36px;
     --item-start-rotate: -4deg;
     --item-end-rotate: -1deg;
@@ -2169,7 +2194,7 @@
     --drink-cap: rgba(78, 128, 96, 0.76);
     --drink-label: rgba(222, 224, 210, 0.74);
     --item-start-x: -16px;
-    --item-end-x: 0px;
+    --item-end-x: -6px;
     --item-end-y: 36px;
     --item-start-rotate: 5deg;
     --item-end-rotate: 1deg;
@@ -2183,7 +2208,7 @@
     --drink-cap: rgba(166, 91, 62, 0.78);
     --drink-label: rgba(104, 142, 103, 0.72);
     --item-start-x: 10px;
-    --item-end-x: 32px;
+    --item-end-x: 20px;
     --item-end-y: 36px;
     --item-start-rotate: 10deg;
     --item-end-rotate: 3deg;
@@ -2223,7 +2248,7 @@
 
   .strength-pack--one {
     --item-start-x: 48px;
-    --item-end-x: 68px;
+    --item-end-x: 54px;
     --item-end-y: 38px;
     --item-start-rotate: -5deg;
     --item-end-rotate: -1deg;
@@ -2233,7 +2258,7 @@
 
   .strength-pack--two {
     --item-start-x: 88px;
-    --item-end-x: 100px;
+    --item-end-x: 86px;
     --item-end-y: 38px;
     --item-start-rotate: 6deg;
     --item-end-rotate: 1deg;
@@ -2284,11 +2309,15 @@
     left: 50%;
     top: 50%;
     box-sizing: border-box;
-    border: 1.6px solid var(--box-edge);
-    background: var(--box-panel);
+    border: 1px solid rgb(var(--rgb-blue-fusion) / 0.2);
+    background:
+      linear-gradient(145deg, rgb(var(--rgb-cloud-dancer) / 0.16), transparent 42%),
+      linear-gradient(315deg, rgb(var(--rgb-blue-fusion) / 0.08), transparent 58%),
+      var(--box-panel);
     box-shadow:
-      inset 0 1px 0 rgb(var(--rgb-cloud-dancer) / 0.28),
-      0 8px 18px rgb(var(--rgb-blue-fusion) / 0.12);
+      inset 0 1px 0 rgb(var(--rgb-cloud-dancer) / 0.36),
+      inset 0 -1px 0 rgb(var(--rgb-blue-fusion) / 0.08),
+      0 8px 18px rgb(var(--rgb-blue-fusion) / 0.05);
     backface-visibility: visible;
     transform-style: preserve-3d;
   }
@@ -2313,11 +2342,15 @@
     margin-left: var(--box-neg-half-w);
     margin-top: var(--box-neg-half-d);
     transform: translateZ(0);
-    background: var(--box-panel);
+    background:
+      linear-gradient(160deg, rgb(var(--rgb-cloud-dancer) / 0.22), transparent 46%),
+      linear-gradient(0deg, rgb(var(--rgb-blue-fusion) / 0.06), transparent 68%),
+      var(--box-panel);
   }
 
   .strength-box-wall {
-    opacity: 1;
+    opacity: 0.98;
+    border-color: rgb(var(--rgb-blue-fusion) / 0.16);
   }
 
   .strength-box-wall--back,
@@ -2354,6 +2387,11 @@
 
   .strength-box-flap {
     z-index: 2;
+    border-color: rgb(var(--rgb-blue-fusion) / 0.14);
+    box-shadow:
+      inset 0 1px 0 rgb(var(--rgb-cloud-dancer) / 0.42),
+      inset 0 -1px 0 rgb(var(--rgb-blue-fusion) / 0.06),
+      0 6px 14px rgb(var(--rgb-blue-fusion) / 0.04);
     transition-duration: 660ms;
     transition-property: transform;
     transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
@@ -2426,7 +2464,7 @@
   .strength-box-label {
     position: absolute;
     left: 50%;
-    bottom: 98px;
+    bottom: 106px;
     z-index: 5;
     color: var(--color-text-black);
     width: 152px;

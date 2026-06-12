@@ -7,8 +7,12 @@ const overviewIntroLines = [
   '백제약품',
 ];
 
-const overviewBodyText =
-  '1946년 설립 이후 80여 년간 축적해온 유통 경험과 전국 단위 물류 인프라를 바탕으로, 대한민국 의약품 공급망의 중심에서 안정적인 서비스를 제공해 왔습니다.';
+const overviewBodyLines = [
+  '1946년 설립 이후 80여 년간 축적해온 유통 경험과',
+  '전국 단위 물류 인프라를 바탕으로,',
+  '대한민국 의약품 공급망의 중심에서 안정적인 서비스를 제공해 왔습니다.',
+];
+const overviewBodyText = overviewBodyLines.join(' ');
 
 const overviewInfoBoxes = [
   {
@@ -104,23 +108,33 @@ export default function CompanyOverview() {
                   className="text-base md:text-lg leading-[1.85] text-neutral-600 [overflow-wrap:anywhere]"
                 >
                   <span aria-hidden="true">
-                    {Array.from(overviewBodyText).map((char, i) => (
-                      <span key={`${char}-${i}`} className="inline-block overflow-hidden align-bottom">
-                        <motion.span
-                          initial={{ y: '132%' }}
-                          animate={{ y: '0%' }}
-                          transition={{
-                            duration: 0.72,
-                            delay: 0.9 + i * 0.012,
-                            ease: [0.16, 1, 0.3, 1],
-                          }}
-                          className="inline-block whitespace-pre will-change-transform"
-                        >
-                          {char === ' ' ? '\u00A0' : char}
-                        </motion.span>
+                    {overviewBodyLines.map((line, lineIndex) => {
+                      const charOffset = overviewBodyLines
+                        .slice(0, lineIndex)
+                        .reduce((count, bodyLine) => count + Array.from(bodyLine).length, 0);
+
+                      return (
+                        <span key={line} className="block">
+                          {Array.from(line).map((char, charIndex) => (
+                            <span key={`${char}-${charIndex}`} className="inline-block overflow-hidden align-bottom">
+                              <motion.span
+                                initial={{ y: '132%' }}
+                                animate={{ y: '0%' }}
+                                transition={{
+                                  duration: 0.72,
+                                  delay: 0.9 + (charOffset + charIndex) * 0.012,
+                                  ease: [0.16, 1, 0.3, 1],
+                                }}
+                                className="inline-block whitespace-pre will-change-transform"
+                              >
+                                {char === ' ' ? '\u00A0' : char}
+                              </motion.span>
+                            </span>
+                          ))}
+                        </span>
+                      );
+                    })}
                       </span>
-                    ))}
-                  </span>
                 </p>
               </div>
             </div>

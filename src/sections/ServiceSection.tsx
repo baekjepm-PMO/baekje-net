@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, useInView, useScroll, useTransform } from 'framer-motion';
+import { motion, AnimatePresence, useInView, useMotionValue, useTransform } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { serviceData } from '../data/mainPage';
 
@@ -11,43 +11,112 @@ export default function ServiceSection() {
   const tallContainerRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(headingRef, { once: true, margin: '-100px' });
+  const showcaseInView = useInView(tallContainerRef, { once: false, margin: '-25% 0px -25% 0px' });
 
   // Scroll progress through the tall scroll container that holds the sticky showcase.
-  // 0 = top of container at top of viewport (sticky just activated, 3-cards visible)
+  // 0 = top of container at top of viewport (sticky just activated, 4-cards visible)
   // 1 = bottom of container at bottom of viewport (sticky about to release)
-  const { scrollYProgress } = useScroll({
-    target: tallContainerRef,
-    offset: ['start start', 'end end'],
-  });
-
-  // Phase transition (composition-aware — the leftmost card grows to occupy the
-  // LEFT/CENTER area where the image content will ultimately live; it stops short
-  // of the right ~36% which is where the white info card will appear later):
-  //   0    → 0.20 : 3 cards visible, no movement
-  //   0.20 → 0.28 : middle + right cards FADE OUT
-  //   0.20 → 0.40 : leftmost card scales 1 → 3.5 (covers left ~64% of viewport)
-  //   0.40        : leftmost card disappears instantly; fullscreen image (same photo) takes over
-  //   0.40 → 0.65 : pure fullscreen — left/center content visible, right side waiting for white card
-  //   0.65 → 1.00 : white card slides in on right, big label appears bottom-left, etc.
-  const activeCardScale = useTransform(scrollYProgress, [0.26, 0.52], [1, 3.5]);
-  const inactiveCardOpacity = useTransform(scrollYProgress, [0.26, 0.36], [1, 0]);
-  const cardsOpacity = useTransform(scrollYProgress, (v) => (v >= 0.52 ? 0 : 1));
+  // NOTE: computed manually from getBoundingClientRect on every scroll instead of
+  // framer's useScroll — useScroll caches the target's position at mount, and the
+  // sections above this one change height after mount, which shifted the whole
+  // timeline by ~1 viewport (photo/text appeared way too early as a result).
+  const scrollYProgress = useMotionValue(0);
+  useEffect(() => {
+    const update = () => {
+      const el = tallContainerRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const total = rect.height - window.innerHeight;
+      scrollYProgress.set(total > 0 ? Math.min(Math.max(-rect.top / total, 0), 1) : 0);
+    };
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    return () => {
+      window.removeEventListener('scroll', update);
+      window.removeEventListener('resize', update);
+    };
+  }, [scrollYProgress]);
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [progress, setProgress] = useState(0);
   // UI (white card / big label / nav) becomes visible only after the 3-cards overlay has faded out
   const [uiVisible, setUiVisible] = useState(false);
+  const uiVisibleRef = useRef(false);
+  const isShowcasePlaying = uiVisible && showcaseInView;
+
+  // Phase transition (fast expansion, text immediately after):
+  //   0    → 0.16 : 4 cards visible, normal colors, no movement
+  //   0.16 → 0.30 : active card expands FAST; inactive cards fade in EXACT sync with expansion
+  //   (white backdrop stays fully opaque the whole time — photo never peeks early)
+  //   0.30 → 0.36 : ONLY after expansion is complete, overlay crossfades to the identical fullscreen image
+  //   0.33 → 1.00 : white card / big label / nav visible — long viewing time
+  const getCardExpansion = (v: number) => Math.min(Math.max((v - 0.16) / 0.14, 0), 1);
+  const activeCardWidth = useTransform(scrollYProgress, (v) => {
+    const p = getCardExpansion(v);
+    return `calc(${(1 - p) * 100}% + ${p * 100}vw)`;
+  });
+  const activeCardHeight = useTransform(scrollYProgress, (v) => {
+    const p = getCardExpansion(v);
+    return `calc(${(1 - p) * 100}% + ${p * 100}vh)`;
+  });
+  const activeCardRadius = useTransform(scrollYProgress, [0.24, 0.3], ['0.75rem', '0rem']);
+  // MEASURED pixel offsets — each card's slot center → viewport center. Guarantees the
+  // expanded card covers the viewport EXACTLY when expansion finishes, on any screen width
+  // (the old hardcoded % offsets left a gap on wide screens, letting the photo peek early).
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [cardCenterOffsets, setCardCenterOffsets] = useState<number[]>([]);
+  useEffect(() => {
+    const measure = () => {
+      setCardCenterOffsets(
+        serviceData.showcases.map((_, i) => {
+          const el = cardRefs.current[i];
+          const parent = el?.offsetParent as HTMLElement | null;
+          if (!el || !parent) return 0;
+          return parent.clientWidth / 2 - (el.offsetLeft + el.offsetWidth / 2);
+        })
+      );
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, []);
+  const activeCardCenterX = useTransform(scrollYProgress, [0.16, 0.3], [0, cardCenterOffsets[activeIndex] ?? 0]);
+  // Inactive cards: normal (opacity 1) while idle, fading in EXACT sync with the expansion —
+  // they reach 0 precisely when the active card finishes expanding.
+  const inactiveCardOpacity = useTransform(scrollYProgress, (v) => 1 - getCardExpansion(v));
+  // Photo background is revealed ONLY after expansion completes (0.30): the whole overlay
+  // (opaque white backdrop + fullscreen card) crossfades into the identical background image.
+  const cardsOpacity = useTransform(scrollYProgress, [0.3, 0.36], [1, 0]);
 
   useEffect(() => {
     const unsubscribe = scrollYProgress.on('change', (v) => {
-      if (v > 0.74) setUiVisible(true);
+      const nextUiVisible = v > 0.33;
+      if (uiVisibleRef.current === nextUiVisible) return;
+
+      uiVisibleRef.current = nextUiVisible;
+      setUiVisible(nextUiVisible);
+
+      // NOTE: do NOT reset activeIndex here — when the user scrolls back up
+      // while on slide 2/3/4, the CURRENT slide's card must shrink back into
+      // its own slot. Resetting to 0 broke the reverse (shrink) animation.
+      if (!nextUiVisible) {
+        setProgress(0);
+      }
     });
     return unsubscribe;
   }, [scrollYProgress]);
 
-  // Auto-advance only after UI has been revealed
   useEffect(() => {
-    if (!uiVisible) return;
+    if (isShowcasePlaying) return;
+
+    // Keep activeIndex so the reverse-scroll shrink targets the current slide.
+    setProgress(0);
+  }, [isShowcasePlaying]);
+
+  // Auto-advance only while the revealed showcase is actually in view.
+  useEffect(() => {
+    if (!isShowcasePlaying) return;
     let start: number | null = null;
     let raf: number;
     const tick = (ts: number) => {
@@ -63,7 +132,7 @@ export default function ServiceSection() {
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [uiVisible, activeIndex]);
+  }, [isShowcasePlaying, activeIndex]);
 
   const goTo = (i: number) => {
     setActiveIndex(i);
@@ -75,7 +144,7 @@ export default function ServiceSection() {
   return (
     <section ref={sectionRef} className="relative bg-cloud-dancer text-blue-fusion">
       {/* Heading */}
-      <div ref={headingRef} className="relative z-10 -mb-48 max-w-[1440px] mx-auto px-6 md:-mb-56 md:px-12 lg:-mb-64 lg:px-20 xl:px-32 pt-24 md:pt-32 pb-6 md:pb-8">
+      <div ref={headingRef} className="relative z-10 -mb-40 max-w-[1440px] mx-auto px-6 md:-mb-48 md:px-12 lg:-mb-56 lg:px-20 xl:px-32 pt-24 md:pt-32 pb-6 md:pb-8">
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -107,8 +176,8 @@ export default function ServiceSection() {
         </div>
       </div>
 
-      {/* Tall scroll container — 300vh of sticky scroll for: dwell, expansion, fade, pure fullscreen pause, then long viewing time */}
-      <div ref={tallContainerRef} className="relative h-[520vh]">
+      {/* Tall scroll container — sticky scroll for: dwell, expansion, fade, then long viewing time */}
+      <div ref={tallContainerRef} className="relative h-[280vh]">
         {/* Sticky inner — pins the showcase to the viewport while user scrolls through the container */}
         <div className="sticky top-0 h-screen w-full overflow-hidden">
         {/* Background — single image whose src changes on slide swap. No fade,
@@ -117,10 +186,10 @@ export default function ServiceSection() {
           <img
             src={active.image}
             alt={active.title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover brightness-[0.92] contrast-[1.03] saturate-[0.96]"
           />
         </motion.div>
-        <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/25 to-black/30 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/52 via-black/32 to-black/36 pointer-events-none" />
         {/* Preload other slide images so the next swap is instant */}
         <div className="hidden" aria-hidden="true">
           {serviceData.showcases.map((s, i) => (
@@ -132,7 +201,7 @@ export default function ServiceSection() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: uiVisible ? 1 : 0 }}
-          transition={{ duration: 0.7, ease }}
+          transition={{ duration: 0.45, ease }}
           className="absolute inset-0 pointer-events-none"
         >
           {/* Big background label — floating at BOTTOM-LEFT of the showcase */}
@@ -140,10 +209,10 @@ export default function ServiceSection() {
             <AnimatePresence mode="wait">
               <motion.h2
                 key={activeIndex}
-                initial={{ opacity: 0, y: 80 }}
+                initial={{ opacity: 0, y: 48 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -40 }}
-                transition={{ duration: 0.8, ease }}
+                transition={{ duration: 0.55, ease }}
                 className="text-cloud-dancer text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-extrabold tracking-tight uppercase leading-none"
               >
                 {active.bigLabel}
@@ -166,11 +235,11 @@ export default function ServiceSection() {
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeIndex}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.6, ease }}
-                className="bg-cloud-dancer text-blue-fusion rounded-2xl border border-cloud-cover/35 p-7 md:p-9 lg:p-10 pb-7 md:pb-7 lg:pb-7 shadow-premium h-full flex flex-col"
+                transition={{ duration: 0.42, ease }}
+                className="bg-[#E7E4DC] text-blue-fusion rounded-2xl border border-cloud-cover/60 p-7 md:p-9 lg:p-10 pb-7 md:pb-7 lg:pb-7 shadow-premium shadow-black/25 h-full flex flex-col"
               >
                 {/* Top spacer — pushes ALL content (number, title, heading, desc) to the bottom */}
                 <div className="flex-1" />
@@ -237,25 +306,38 @@ export default function ServiceSection() {
              transition feels like "the photo grows into the fullscreen". Other cards fade. */}
         <motion.div
           style={{ opacity: cardsOpacity }}
-          className="absolute inset-0 z-30 pointer-events-none bg-cloud-dancer flex items-center justify-center gap-2 px-6 md:gap-3 md:px-12 lg:gap-4 lg:px-20"
+          className="absolute inset-0 z-30 pointer-events-none flex items-center justify-center gap-2 px-6 md:gap-3 md:px-12 lg:gap-4 lg:px-20"
         >
+          {/* Solid backdrop — stays opaque; disappears together with the whole overlay */}
+          <div className="absolute inset-0 bg-cloud-dancer" />
           {serviceData.showcases.map((item, i) => {
             const isActive = i === activeIndex;
             return (
               <motion.div
                 key={i}
+                ref={(el) => { cardRefs.current[i] = el; }}
                 style={{
-                  scale: isActive ? activeCardScale : 1,
+                  x: isActive ? activeCardCenterX : 0,
                   opacity: isActive ? 1 : inactiveCardOpacity,
                   zIndex: isActive ? 10 : 1,
                 }}
-                className="flex-1 max-w-[260px] md:max-w-[300px] lg:max-w-[340px] aspect-[3/4] rounded-2xl overflow-hidden shadow-premium"
+                className="relative flex-1 max-w-[260px] md:max-w-[300px] lg:max-w-[340px] aspect-[3/4]"
               >
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className="w-full h-full object-cover"
-                />
+                <motion.div
+                  style={{
+                    width: isActive ? activeCardWidth : '100%',
+                    height: isActive ? activeCardHeight : '100%',
+                    borderRadius: isActive ? activeCardRadius : '0.75rem',
+                  }}
+                  className="absolute left-1/2 top-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 overflow-hidden shadow-premium"
+                >
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="w-full h-full object-cover brightness-[0.92] contrast-[1.03] saturate-[0.96]"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/52 via-black/32 to-black/36 pointer-events-none" />
+                </motion.div>
               </motion.div>
             );
           })}

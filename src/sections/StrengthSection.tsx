@@ -121,7 +121,7 @@ export default function StrengthSection() {
           initial={{ opacity: 0, y: 26 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.12, ease }}
-          className="mt-8 max-w-5xl text-2xl font-bold leading-[1.3] text-blue-fusion md:mt-10 md:text-3xl lg:text-4xl"
+          className="mt-6 max-w-5xl text-2xl font-bold leading-[1.3] text-blue-fusion md:text-3xl lg:text-4xl"
         >
           대한민국 의약품 유통의 기준
         </motion.h2>
