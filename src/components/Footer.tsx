@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom';
 import { MapPin, Phone, Mail } from 'lucide-react';
 
 export default function Footer() {
@@ -33,18 +32,10 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 pt-5 border-t border-cloud-dancer/20 flex flex-col md:flex-row justify-between items-center gap-3">
+        <div className="mt-8 pt-5 border-t border-cloud-dancer/20">
           <p className="text-xs text-cloud-dancer/55">
             &copy; 2024 백제약품. All rights reserved.
           </p>
-          <div className="flex gap-5">
-            <Link to="#" className="text-xs text-cloud-dancer/55 hover:text-golden-mist transition-colors">
-              개인정보처리방침
-            </Link>
-            <Link to="#" className="text-xs text-cloud-dancer/55 hover:text-golden-mist transition-colors">
-              이용약관
-            </Link>
-          </div>
         </div>
       </div>
     </footer>
