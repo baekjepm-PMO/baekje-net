@@ -571,7 +571,7 @@
   }
 
   .group-company-row__photo--mask-reveal {
-    width: 344.827586%;
+    width: 190%;
     box-shadow: 22px 0 62px rgb(8 15 24 / 0.1);
     will-change: clip-path;
     transform: translateZ(0);
